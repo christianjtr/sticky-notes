@@ -1,4 +1,4 @@
-# Basic Sticky Notes
+# 📝 Basic Sticky Notes
 
 This is a simple sticky notes application built with React and TypeScript using Vite. It provides a clean, interactive workspace for creating, editing, and organizing virtual sticky notes on a digital board.
 
@@ -22,6 +22,10 @@ pnpm dev
 Open your browser to the provided localhost URL to start using the app.
 
 ## 👀 Samples
+
+##### Live demo
+
+Click on the following link [GitHub page project](https://christianjtr.github.io/sticky-notes/).
 
 ##### Preview
 
