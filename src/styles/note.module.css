@@ -1,0 +1,62 @@
+.note {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px var(--shadow);
+    cursor: move;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    will-change: transform;
+    transition: box-shadow var(--transition);
+}
+
+.note:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.isDraggingEffect {
+    opacity: 0.8;
+    box-shadow: 0 4px 16px var(--shadow);
+}
+
+.noteContentWrapper {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+}
+
+.textarea {
+    width: 100%;
+    height: 100%;
+    border: none;
+    resize: none;
+    background: transparent;
+    outline: none;
+    padding: var(--spacing);
+    font-family: inherit;
+    font-size: var(--font-size);
+    color: var(--text-color);
+    z-index: 1;
+}
+
+.resizeHandle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 16px;
+    height: 16px;
+    background: var(--border-color);
+    clip-path: polygon(100% 0%, 0% 100%, 100% 100%);
+    z-index: 10;
+    cursor: nw-resize;
+}
+
+.resizeHandle:hover,
+.resizeHandle:focus {
+    background: var(--primary-color);
+}

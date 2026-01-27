@@ -1,20 +1,8 @@
 .board {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    padding: 24px;
-    background-color: white;
-    border-radius: 12px;
-    box-sizing: border-box;
-    width: 95%;
-    max-width: 1400px;
-    min-height: 80vh;
-    position: relative;
-}
-
-@media (min-width: 1024px) and (min-height: 768px) {
-    .board {
-        min-width: 1024px;
-        min-height: 768px;
-    }
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  background-color: var(--background);
+  overflow: hidden;
+  user-select: none;
 }
