@@ -21,6 +21,14 @@ pnpm dev
 
 Open your browser to the provided localhost URL to start using the app.
 
+## 👀 Samples
+
+##### Preview
+
+<p align="center">
+    <img src="https://github.com/christianjtr/sticky-notes/blob/main/samples/sticky-notes-board.gif" alt="gif-demo"/>
+</p>
+
 ## 👨‍🏫 Architecture
 
 The application follows a modular, component-based architecture with clear separation of concerns. State management is handled through custom React hooks, promoting reusability and testability.
