@@ -17,6 +17,7 @@ export default defineConfig({
       "@app-types": resolve(__dirname, "./src/types"),
       "@components": resolve(__dirname, "./src/components"),
       "@hooks": resolve(__dirname, "./src/hooks"),
+      "@services": resolve(__dirname, "./src/services"),
       "@styles": resolve(__dirname, "./src/styles"),
       "@utils": resolve(__dirname, "./src/utils"),
     },
