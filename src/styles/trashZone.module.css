@@ -17,8 +17,14 @@
 }
 
 .isOver {
-  background: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.3);
   border: 2px solid var(--danger-color);
-  transform: scale(1.1);
+  transform: scale(1.15);
   color: var(--danger-hover);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+}
+
+.isDragNear {
+  transform: scale(1.05);
+  border-color: var(--danger-hover);
 }

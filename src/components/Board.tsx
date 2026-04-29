@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useCallback } from 'react'
 import { useBoard } from '@hooks/useBoard'
 import { useBoardDragAndDrop } from '@hooks/useBoardDragAndDrop'
 import Note from './Note'
@@ -12,11 +12,16 @@ interface BoardProps {
 
 const Board: React.FC<BoardProps> = ({ enableTrash = true }): React.ReactElement => {
   const { notes, addNote, updateNote, deleteNote } = useBoard()
+  const [isDragging, setIsDragging] = useState(false)
+
+  const handleDragStart = useCallback(() => setIsDragging(true), [])
+  const handleDragEnd = useCallback(() => setIsDragging(false), [])
 
   const { handleBoardDragOver, handleBoardDrop, handleTrashDrop } = useBoardDragAndDrop({
     notes,
     updateNote,
-    deleteNote
+    deleteNote,
+    onDragEnd: handleDragEnd,
   })
 
   return (
@@ -35,9 +40,12 @@ const Board: React.FC<BoardProps> = ({ enableTrash = true }): React.ReactElement
           key={note.id}
           note={note}
           updateNote={updateNote}
+          onDelete={deleteNote}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
         />
       ))}
-      {enableTrash && <TrashZone onDrop={handleTrashDrop} />}
+      {enableTrash && <TrashZone onDrop={handleTrashDrop} isDragging={isDragging} />}
     </div>
   )
 }

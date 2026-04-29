@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import type { Note } from '@app-types/Note'
 
 interface UseBoardDragAndDropParams {
     notes: Note[];
     updateNote: (note: Note) => void;
     deleteNote: (id: string) => void;
+    onDragEnd?: () => void;
 }
 
 interface UseBoardDragAndDrop {
@@ -13,17 +14,17 @@ interface UseBoardDragAndDrop {
     handleTrashDrop: (event: React.DragEvent) => void;
 }
 
-export const useBoardDragAndDrop = ({ notes, updateNote, deleteNote }: UseBoardDragAndDropParams): UseBoardDragAndDrop => {
+export const useBoardDragAndDrop = ({ notes, updateNote, deleteNote, onDragEnd }: UseBoardDragAndDropParams): UseBoardDragAndDrop => {
 
     const getNoteId = (event: React.DragEvent): string => {
         return event.dataTransfer.getData('noteId')
     }
 
-    const handleBoardDragOver = (event: React.DragEvent): void => {
+    const handleBoardDragOver = useCallback((event: React.DragEvent): void => {
         event.preventDefault()
-    }
+    }, [])
 
-    const handleBoardDrop = (event: React.DragEvent): void => {
+    const handleBoardDrop = useCallback((event: React.DragEvent): void => {
         event.preventDefault()
 
         const noteId = getNoteId(event)
@@ -36,9 +37,11 @@ export const useBoardDragAndDrop = ({ notes, updateNote, deleteNote }: UseBoardD
 
             updateNote({ ...note, position: { x, y } })
         }
-    }
 
-    const handleTrashDrop = (event: React.DragEvent) => {
+        onDragEnd?.()
+    }, [notes, updateNote, onDragEnd])
+
+    const handleTrashDrop = useCallback((event: React.DragEvent) => {
         event.preventDefault()
 
         const noteId = getNoteId(event)
@@ -46,7 +49,9 @@ export const useBoardDragAndDrop = ({ notes, updateNote, deleteNote }: UseBoardD
         if (noteId) {
             deleteNote(noteId)
         }
-    }
+
+        onDragEnd?.()
+    }, [deleteNote, onDragEnd])
 
     return {
         handleBoardDragOver,

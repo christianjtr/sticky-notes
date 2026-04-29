@@ -21,6 +21,8 @@
   font-weight: 600;
   font-size: 18px;
   pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .add-note-btn {
