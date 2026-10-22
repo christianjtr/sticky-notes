@@ -13,7 +13,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ onAdd }): React.ReactElement => {
         Sticky notes
       </h1>
       <Button id='add-note-button' className={toolbarStyles['add-note-btn']} onClick={onAdd}>
-        Add Note
+        Add note
       </Button>
     </div>
   );

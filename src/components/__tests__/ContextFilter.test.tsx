@@ -6,8 +6,8 @@ import type { Context } from '@app-types/Context';
 import { NOTE_ID_DATA_KEY } from '@constants/drag';
 
 const contexts: Context[] = [
-    { id: 'context-1', name: 'Trabajo', color: '#3182ed' },
-    { id: 'context-2', name: 'Casa', color: '#099268' },
+    { id: 'context-1', name: 'Work', color: '#3182ed' },
+    { id: 'context-2', name: 'Home', color: '#099268' },
 ];
 
 const renderFilter = (overrides: Partial<React.ComponentProps<typeof ContextFilter>> = {}) => {
@@ -45,15 +45,15 @@ describe('ContextFilter', () => {
     it('renders a tag per context', () => {
         renderFilter();
 
-        expect(screen.getByRole('button', { name: 'Trabajo' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Casa' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Work' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument();
     });
 
     it('filters the board when a tag is pressed', async () => {
         const user = userEvent.setup();
         const { onToggle } = renderFilter();
 
-        await user.click(screen.getByRole('button', { name: 'Trabajo' }));
+        await user.click(screen.getByRole('button', { name: 'Work' }));
 
         expect(onToggle).toHaveBeenCalledWith('context-1');
     });
@@ -61,11 +61,11 @@ describe('ContextFilter', () => {
     it('marks the active context as pressed', () => {
         renderFilter({ activeContextId: 'context-2' });
 
-        expect(screen.getByRole('button', { name: 'Casa' })).toHaveAttribute(
+        expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute(
             'aria-pressed',
             'true'
         );
-        expect(screen.getByRole('button', { name: 'Trabajo' })).toHaveAttribute(
+        expect(screen.getByRole('button', { name: 'Work' })).toHaveAttribute(
             'aria-pressed',
             'false'
         );
@@ -74,7 +74,7 @@ describe('ContextFilter', () => {
     it('files a note in a context when it is dropped on its tag', () => {
         const { onAssign } = renderFilter();
 
-        fireDrop(screen.getByRole('button', { name: 'Trabajo' }), 'note-1');
+        fireDrop(screen.getByRole('button', { name: 'Work' }), 'note-1');
 
         expect(onAssign).toHaveBeenCalledWith('note-1', 'context-1');
     });
@@ -83,9 +83,9 @@ describe('ContextFilter', () => {
         const user = userEvent.setup();
         const { onCreate } = renderFilter();
 
-        await user.click(screen.getByRole('button', { name: '+ Nuevo' }));
+        await user.click(screen.getByRole('button', { name: '+ New' }));
 
-        const input = screen.getByLabelText('Nombre del nuevo contexto');
+        const input = screen.getByLabelText('Context name');
         await user.type(input, 'Ideas');
         await user.keyboard('{Enter}');
 
@@ -96,19 +96,19 @@ describe('ContextFilter', () => {
         const user = userEvent.setup();
         const { onCreate } = renderFilter();
 
-        await user.click(screen.getByRole('button', { name: '+ Nuevo' }));
-        await user.type(screen.getByLabelText('Nombre del nuevo contexto'), 'Ideas');
+        await user.click(screen.getByRole('button', { name: '+ New' }));
+        await user.type(screen.getByLabelText('Context name'), 'Ideas');
         await user.keyboard('{Escape}');
 
         expect(onCreate).not.toHaveBeenCalled();
-        expect(screen.queryByLabelText('Nombre del nuevo contexto')).not.toBeInTheDocument();
+        expect(screen.queryByLabelText('Context name')).not.toBeInTheDocument();
     });
 
     it('offers to delete the active context only', () => {
         const { onDelete } = renderFilter({ activeContextId: 'context-1' });
 
         expect(
-            screen.getByRole('button', { name: 'Eliminar el contexto Trabajo' })
+            screen.getByRole('button', { name: 'Delete the Work context' })
         ).toBeInTheDocument();
         expect(onDelete).not.toHaveBeenCalled();
     });
@@ -118,7 +118,7 @@ describe('ContextFilter', () => {
         const { onDelete } = renderFilter({ activeContextId: 'context-1' });
 
         await user.click(
-            screen.getByRole('button', { name: 'Eliminar el contexto Trabajo' })
+            screen.getByRole('button', { name: 'Delete the Work context' })
         );
 
         expect(onDelete).toHaveBeenCalledWith('context-1');

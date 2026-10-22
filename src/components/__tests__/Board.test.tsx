@@ -20,7 +20,7 @@ describe('Board', () => {
         const user = userEvent.setup();
         render(<Board />);
 
-        await user.click(screen.getByRole('button', { name: 'Add Note' }));
+        await user.click(screen.getByRole('button', { name: 'Add note' }));
 
         expect(screen.getAllByRole('group', { name: /arrow keys/ })).toHaveLength(1);
         expect(screen.getByText(/Note added/)).toBeInTheDocument();
@@ -30,7 +30,7 @@ describe('Board', () => {
         const user = userEvent.setup();
         render(<Board />);
 
-        const addButton = screen.getByRole('button', { name: 'Add Note' });
+        const addButton = screen.getByRole('button', { name: 'Add note' });
         await user.click(addButton);
         await user.click(addButton);
         await user.click(addButton);
@@ -46,7 +46,7 @@ describe('Board', () => {
         const user = userEvent.setup();
         render(<Board />);
 
-        await user.click(screen.getByRole('button', { name: 'Add Note' }));
+        await user.click(screen.getByRole('button', { name: 'Add note' }));
         fireEvent.click(screen.getByRole('button', { name: /Delete Note/ }));
 
         expect(screen.queryAllByRole('group', { name: /arrow keys/ })).toHaveLength(0);
@@ -87,13 +87,13 @@ describe('Board', () => {
         const user = userEvent.setup();
         render(<Board />);
 
-        await user.click(screen.getByRole('button', { name: 'Add Note' }));
-        await user.click(screen.getByRole('button', { name: '+ Nuevo' }));
-        await user.type(screen.getByLabelText('Nombre del nuevo contexto'), 'Trabajo');
+        await user.click(screen.getByRole('button', { name: 'Add note' }));
+        await user.click(screen.getByRole('button', { name: '+ New' }));
+        await user.type(screen.getByLabelText('Context name'), 'Work');
         await user.keyboard('{Enter}');
 
         expect(screen.getAllByRole('group', { name: /arrow keys/ })).toHaveLength(1);
-        expect(screen.getByRole('button', { name: 'Trabajo' })).toHaveAttribute(
+        expect(screen.getByRole('button', { name: 'Work' })).toHaveAttribute(
             'aria-pressed',
             'false'
         );
@@ -103,12 +103,12 @@ describe('Board', () => {
         const user = userEvent.setup();
         render(<Board />);
 
-        await user.click(screen.getByRole('button', { name: '+ Nuevo' }));
-        await user.type(screen.getByLabelText('Nombre del nuevo contexto'), 'Trabajo');
+        await user.click(screen.getByRole('button', { name: '+ New' }));
+        await user.type(screen.getByLabelText('Context name'), 'Work');
         await user.keyboard('{Enter}');
 
-        await user.click(screen.getByRole('button', { name: 'Trabajo' }));
+        await user.click(screen.getByRole('button', { name: 'Work' }));
 
-        expect(screen.getByText(/No notes in Trabajo yet/)).toBeInTheDocument();
+        expect(screen.getByText(/No notes in Work yet/)).toBeInTheDocument();
     });
 });

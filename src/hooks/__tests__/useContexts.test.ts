@@ -28,14 +28,14 @@ describe('useContexts', () => {
     it('restores the persisted contexts and the active one', () => {
         localStorage.setItem(
             CONTEXTS_KEY,
-            JSON.stringify([{ id: 'context-1', name: 'Trabajo', color: '#3182ed' }])
+            JSON.stringify([{ id: 'context-1', name: 'Work', color: '#3182ed' }])
         );
         localStorage.setItem(ACTIVE_KEY, 'context-1');
 
         const { result } = renderHook(() => useContexts());
 
         expect(result.current.contexts).toHaveLength(1);
-        expect(result.current.contexts[0].name).toBe('Trabajo');
+        expect(result.current.contexts[0].name).toBe('Work');
         expect(result.current.activeContextId).toBe('context-1');
     });
 
@@ -51,11 +51,11 @@ describe('useContexts', () => {
         const { result } = renderHook(() => useContexts());
 
         act(() => {
-            result.current.createContext('Trabajo');
+            result.current.createContext('Work');
         });
 
         expect(result.current.contexts).toHaveLength(1);
-        expect(result.current.contexts[0].name).toBe('Trabajo');
+        expect(result.current.contexts[0].name).toBe('Work');
         expect(result.current.contexts[0].color).toBe(CONTEXT_COLORS[0]);
     });
 
@@ -75,17 +75,17 @@ describe('useContexts', () => {
         const { result } = renderHook(() => useContexts());
 
         act(() => {
-            result.current.createContext('  Casa  ');
+            result.current.createContext('  Home  ');
         });
 
-        expect(result.current.contexts[0].name).toBe('Casa');
+        expect(result.current.contexts[0].name).toBe('Home');
     });
 
     it('toggles the active context', () => {
         const { result } = renderHook(() => useContexts());
 
         act(() => {
-            result.current.createContext('Trabajo');
+            result.current.createContext('Work');
         });
 
         const id = result.current.contexts[0].id;
@@ -105,7 +105,7 @@ describe('useContexts', () => {
         const { result } = renderHook(() => useContexts());
 
         act(() => {
-            result.current.createContext('Trabajo');
+            result.current.createContext('Work');
         });
 
         const id = result.current.contexts[0].id;
@@ -133,7 +133,7 @@ describe('useContexts', () => {
         const { result } = renderHook(() => useContexts());
 
         act(() => {
-            result.current.createContext('Trabajo');
+            result.current.createContext('Work');
         });
         expect(readContexts()).toHaveLength(0);
 
@@ -148,7 +148,7 @@ describe('useContexts', () => {
         const { result } = renderHook(() => useContexts());
 
         act(() => {
-            result.current.createContext('Trabajo');
+            result.current.createContext('Work');
         });
         act(() => {
             window.dispatchEvent(new Event('pagehide'));
@@ -161,7 +161,7 @@ describe('useContexts', () => {
         const { result } = renderHook(() => useContexts());
 
         act(() => {
-            result.current.createContext('Trabajo');
+            result.current.createContext('Work');
         });
 
         const id = result.current.contexts[0].id;

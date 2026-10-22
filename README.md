@@ -76,7 +76,7 @@ Interaction logic is split by concern. `useBoardDragAndDrop` owns the HTML5 drag
 
 ## 🗂 Contexts
 
-A context is a group of notes the user names, like "Trabajo" or "Ideas". The board keeps a row of tags in its corner, and each of them does two things:
+A context is a group of notes the user names, like "Work" or "Ideas". The board keeps a row of tags in its corner, and each of them does two things:
 
 - **click** filters the board, showing only the notes of that context
 - **drop a note on it** files the note in that context, which reuses the drag payload the notes already carry

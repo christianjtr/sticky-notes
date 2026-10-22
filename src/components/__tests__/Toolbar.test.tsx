@@ -9,7 +9,7 @@ describe('Toolbar', () => {
         render(<Toolbar onAdd={vi.fn()} />);
 
         expect(screen.getByRole('heading', { name: 'Sticky notes' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Add Note' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Add note' })).toBeInTheDocument();
     });
 
     it('adds a note when the button is pressed', async () => {
@@ -17,7 +17,7 @@ describe('Toolbar', () => {
         const onAdd = vi.fn();
 
         render(<Toolbar onAdd={onAdd} />);
-        await user.click(screen.getByRole('button', { name: 'Add Note' }));
+        await user.click(screen.getByRole('button', { name: 'Add note' }));
 
         expect(onAdd).toHaveBeenCalledTimes(1);
     });

@@ -4,7 +4,7 @@ import { CONTEXT_COLORS } from '@constants/context';
 
 const validContext = {
     id: 'context-1',
-    name: 'Trabajo',
+    name: 'Work',
     color: '#3182ed',
 };
 
@@ -21,13 +21,13 @@ describe('sanitizeContext', () => {
 
     it('rejects values that are not objects', () => {
         expect(sanitizeContext(null)).toBeNull();
-        expect(sanitizeContext('Trabajo')).toBeNull();
+        expect(sanitizeContext('Work')).toBeNull();
     });
 
     it('trims the name and falls back to a colour', () => {
-        const result = sanitizeContext({ id: 'context-2', name: '  Casa  ' });
+        const result = sanitizeContext({ id: 'context-2', name: '  Home  ' });
 
-        expect(result?.name).toBe('Casa');
+        expect(result?.name).toBe('Home');
         expect(result?.color).toBe(CONTEXT_COLORS[0]);
     });
 });

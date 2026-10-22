@@ -1,4 +1,4 @@
-/** A user defined grouping of notes, e.g. "Trabajo" or "Casa". */
+/** A user defined grouping of notes, e.g. "Work" or "Home". */
 export interface Context {
     id: string;
     name: string;

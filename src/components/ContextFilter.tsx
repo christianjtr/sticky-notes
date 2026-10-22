@@ -125,8 +125,8 @@ const ContextFilter: React.FC<ContextFilterProps> = ({
                         className={contextStyles.input}
                         value={draft}
                         maxLength={CONTEXT_NAME_MAX_LENGTH}
-                        placeholder="Nombre"
-                        aria-label="Nombre del nuevo contexto"
+                        placeholder="Name"
+                        aria-label="Context name"
                         onChange={(event) => {
                             draftRef.current = event.target.value;
                             setDraft(event.target.value);
@@ -153,7 +153,7 @@ const ContextFilter: React.FC<ContextFilterProps> = ({
                         className={`${contextStyles.chip} ${contextStyles.addButton}`}
                         onClick={() => setIsCreating(true)}
                     >
-                        + Nuevo
+                        + New
                     </button>
                 )}
             </li>
@@ -163,7 +163,7 @@ const ContextFilter: React.FC<ContextFilterProps> = ({
                     <button
                         type="button"
                         className={contextStyles.removeButton}
-                        aria-label={`Eliminar el contexto ${activeContext.name}`}
+                        aria-label={`Delete the ${activeContext.name} context`}
                         onClick={() => onDelete(activeContext.id)}
                     >
                         <span aria-hidden="true">×</span>
