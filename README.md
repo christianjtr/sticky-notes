@@ -2,7 +2,7 @@
 
 A board of sticky notes built with React and TypeScript using Vite. Notes are created, moved, resized, written on and filed in contexts, and everything is persisted in the browser.
 
-The board is a warm paper surface with real pad colours on it, so it reads like the notes stuck on a fridge or on an ideation wall rather than like a drawing tool.
+The board is a warm paper surface with real pad colours on it, so it reads like the notes stuck on a fridge or on an ideation wall rather than like a drawing tool. The whole interface is written in ink, a warm near black, which leaves the colour of the notes as the only saturated thing on the screen. The notes are written in a book serif and the chrome in a geometric sans, so the content and the tool never look alike.
 
 ## 🕹️ Technologies
 
