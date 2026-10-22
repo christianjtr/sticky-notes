@@ -34,6 +34,20 @@ const Toolbar: React.FC<ToolbarProps> = ({ onAdd }): React.ReactElement => {
         </h1>
       </div>
       <Button id='add-note-button' className={toolbarStyles['add-note-btn']} onClick={onAdd}>
+        <svg
+          className={toolbarStyles['add-note-btn__plus']}
+          viewBox="0 0 13 13"
+          width="13"
+          height="13"
+          aria-hidden="true"
+        >
+          <path
+            d="M6.5 1.2v10.6M1.2 6.5h10.6"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+          />
+        </svg>
         Add note
       </Button>
     </div>

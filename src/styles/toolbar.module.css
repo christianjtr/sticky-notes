@@ -2,6 +2,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
+  width: 100%;
 }
 
 .brand {
@@ -27,25 +28,39 @@
   -webkit-user-drag: none;
 }
 
+/* The action that adds a note. It is pushed to the far end of the row so it
+   never sits next to the tags of the contexts. */
 .add-note-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   height: 32px;
-  padding: 0 14px;
-  border: none;
+  margin-left: auto;
+  padding: 0 14px 0 11px;
+  border: 1px solid rgba(43, 39, 36, 0.28);
   border-radius: var(--radius-control);
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--surface);
+  color: var(--ink);
   font-family: var(--font-ui);
   font-size: var(--font-size-ui);
   font-weight: var(--font-weight-ui);
   cursor: pointer;
-  transition: background-color 150ms ease-in-out 80ms;
+  transition:
+    background-color 150ms ease-in-out 80ms,
+    border-color 150ms ease-in-out 80ms;
 }
 
 .add-note-btn:hover {
-  background: #17130f;
+  background: #ffffff;
+  border-color: var(--ink);
 }
 
 .add-note-btn:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 2px;
+}
+
+.add-note-btn__plus {
+  flex: none;
+  display: block;
 }
