@@ -180,7 +180,7 @@ const Board: React.FC<BoardProps> = ({ enableTrash = true }): React.ReactElement
 
       {activeContext && visibleNotes.length === 0 && (
         <p className={boardStyles.emptyState}>
-          No notes in {activeContext.name} yet. Drag a note onto its tag to file it there.
+          No notes in {activeContext.name} yet. Drag a note onto the tag to file it there.
         </p>
       )}
 

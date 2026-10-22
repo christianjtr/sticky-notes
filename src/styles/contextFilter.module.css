@@ -17,14 +17,14 @@
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  height: 26px;
-  padding: 0 10px;
-  border: 1px solid var(--hairline);
+  gap: 7px;
+  height: 28px;
+  padding: 0 11px;
+  border: 1px solid var(--ink-line);
   border-radius: var(--radius-chip);
-  background: transparent;
-  color: var(--chrome-muted);
-  font-family: inherit;
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-family: var(--font-ui);
   font-size: var(--font-size-ui);
   font-weight: var(--font-weight-ui);
   cursor: pointer;
@@ -35,24 +35,25 @@
 }
 
 .chip:hover {
-  background: var(--muted);
-  color: var(--chrome-text);
+  background: #ffffff;
+  color: var(--ink);
 }
 
 .chip[aria-pressed='true'] {
-  background: var(--chrome-text);
-  border-color: var(--chrome-text);
-  color: #ffffff;
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
 }
 
 .chip[aria-pressed='true']:hover {
-  background: var(--chrome-text);
+  background: var(--ink);
 }
 
 .isDropTarget {
-  border-color: var(--accent);
-  background: var(--accent-wash);
-  color: var(--chrome-text);
+  border-color: var(--ink);
+  background: #ffffff;
+  color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(43, 39, 36, 0.1);
 }
 
 .dot {
@@ -64,23 +65,28 @@
 
 .addButton {
   border-style: dashed;
+  background: transparent;
 }
 
 .input {
-  height: 26px;
+  height: 28px;
   width: 140px;
-  padding: 0 10px;
-  border: 1px solid var(--accent);
+  padding: 0 11px;
+  border: 1px solid var(--ink);
   border-radius: var(--radius-chip);
-  background: var(--canvas);
-  color: var(--chrome-text);
-  font-family: inherit;
+  background: #ffffff;
+  color: var(--ink);
+  font-family: var(--font-ui);
   font-size: var(--font-size-ui);
   font-weight: var(--font-weight-ui);
 }
 
+.input::placeholder {
+  color: var(--ink-soft);
+}
+
 .input:focus-visible {
-  outline: 2px solid var(--accent-strong);
+  outline: 2px solid var(--ink);
   outline-offset: 1px;
 }
 
@@ -88,13 +94,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   padding: 0;
-  border: 1px solid var(--hairline);
+  border: 1px solid transparent;
   border-radius: 50%;
   background: transparent;
-  color: var(--chrome-muted);
+  color: var(--ink-faint);
+  font-family: var(--font-ui);
   font-size: 15px;
   line-height: 1;
   cursor: pointer;
@@ -107,6 +114,6 @@
 }
 
 .removeButton:focus-visible {
-  outline: 2px solid var(--accent-strong);
+  outline: 2px solid var(--ink);
   outline-offset: 2px;
 }

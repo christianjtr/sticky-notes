@@ -52,7 +52,7 @@ const TrashZone: React.FC<TrashZoneProps> = ({ onDrop, isDragging = false }) => 
           height="24"
           fill="none"
           stroke="currentColor"
-          strokeWidth="1.6"
+          strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
           aria-hidden="true"

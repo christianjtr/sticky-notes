@@ -32,7 +32,7 @@ describe('getNoteShadow', () => {
     it('builds a contact shadow and an ambient one', () => {
         const shadow = getNoteShadow('note-1');
 
-        expect(shadow).toContain('0 1px 1px rgba(15, 23, 31, 0.12)');
+        expect(shadow).toContain('0 1px 1px rgba(58, 46, 36, 0.18)');
         expect(shadow.match(/rgba/g)).toHaveLength(2);
     });
 

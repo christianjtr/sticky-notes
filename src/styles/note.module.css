@@ -15,18 +15,22 @@
     transition: var(--motion-shadow);
 }
 
-/* The paper catches the light from the top left. */
+/* The sheet catches the light from the top left and shows its grain. */
 .note::after {
     content: '';
     position: absolute;
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    background: linear-gradient(158deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0) 45%);
+    background-image: linear-gradient(
+        158deg,
+        rgba(255, 255, 255, 0.17),
+        rgba(255, 255, 255, 0) 44%
+    );
 }
 
 .note:hover {
-    box-shadow: var(--note-shadow), 0 3px 8px -3px rgba(15, 23, 31, 0.18);
+    box-shadow: var(--note-shadow), 0 3px 8px -3px rgba(58, 46, 36, 0.2);
 }
 
 .note:active {
@@ -34,13 +38,13 @@
 }
 
 .note:focus-visible {
-    outline: 2px solid var(--accent-strong);
+    outline: 2px solid var(--ink);
     outline-offset: 2px;
 }
 
 .isDraggingEffect,
 .isResizing {
-    box-shadow: var(--note-shadow), 0 10px 24px -8px rgba(15, 23, 31, 0.3);
+    box-shadow: var(--note-shadow), 0 12px 26px -8px rgba(58, 46, 36, 0.32);
 }
 
 .textarea {
@@ -50,11 +54,11 @@
     resize: none;
     background: transparent;
     outline: none;
-    padding: 18px 30px 18px 18px;
-    font-family: var(--font-family);
+    padding: 16px 30px 16px 16px;
+    font-family: var(--font-note);
     font-size: var(--font-size-note);
     line-height: var(--line-height-note);
-    color: var(--paper-text);
+    color: var(--note-text);
     z-index: 1;
     /* The note itself is not selectable, its text is. */
     user-select: text;
@@ -63,7 +67,7 @@
 }
 
 .textarea::placeholder {
-    color: var(--paper-placeholder);
+    color: var(--note-placeholder);
     opacity: 1;
 }
 
@@ -75,14 +79,14 @@
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.7);
     z-index: 2;
 }
 
 .deleteButton {
     position: absolute;
-    top: 6px;
-    right: 6px;
+    top: 5px;
+    right: 5px;
     width: 24px;
     height: 24px;
     display: flex;
@@ -91,8 +95,9 @@
     padding: 0;
     border: none;
     border-radius: var(--radius-control);
-    background: var(--muted);
-    color: var(--chrome-text);
+    background: var(--surface-sunk);
+    color: var(--ink-soft);
+    font-family: var(--font-ui);
     font-size: 15px;
     line-height: 1;
     cursor: pointer;
@@ -100,7 +105,7 @@
     /* An invisible button would still be hit, and a click in the corner of a
        note would delete it. */
     pointer-events: none;
-    transition: opacity 80ms ease-in-out, background-color 150ms ease-in-out 80ms;
+    transition: opacity 90ms ease-in-out, background-color 150ms ease-in-out 80ms;
     z-index: 2;
 }
 
@@ -110,12 +115,12 @@
 }
 
 .deleteButton:hover {
-    background: var(--danger-text);
+    background: var(--danger);
     color: #ffffff;
 }
 
 .deleteButton:focus-visible {
-    outline: 2px solid var(--accent-strong);
+    outline: 2px solid var(--ink);
     outline-offset: 2px;
     opacity: 1;
 }
@@ -142,14 +147,16 @@
     background-color: var(--grip);
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M11 4.5 4.5 11 M11 8 8 11' stroke='%23000' stroke-width='1.6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E") no-repeat center / contain;
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M11 4.5 4.5 11 M11 8 8 11' stroke='%23000' stroke-width='1.6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E") no-repeat center / contain;
+    opacity: 0.75;
 }
 
 .resizeHandle:hover::before,
 .resizeHandle:focus-visible::before {
-    --grip: var(--accent-strong);
+    --grip: var(--ink);
+    opacity: 1;
 }
 
 .resizeHandle:focus-visible {
-    outline: 2px solid var(--accent-strong);
+    outline: 2px solid var(--ink);
     outline-offset: 1px;
 }

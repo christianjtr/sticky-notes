@@ -32,10 +32,10 @@ export const getNoteShadow = (noteId: string): string => {
     const offset = (5 + lift * 5).toFixed(1);
     const blur = (14 + lift * 8).toFixed(1);
     const spread = (4 + lift * 3).toFixed(1);
-    const alpha = (0.18 + lift * 0.08).toFixed(3);
+    const alpha = (0.24 + lift * 0.1).toFixed(3);
 
     return (
-        `0 1px 1px rgba(15, 23, 31, 0.12), ` +
-        `0 ${offset}px ${blur}px -${spread}px rgba(15, 23, 31, ${alpha})`
+        `0 1px 1px rgba(58, 46, 36, 0.18), ` +
+        `0 ${offset}px ${blur}px -${spread}px rgba(58, 46, 36, ${alpha})`
     );
 };

@@ -1,27 +1,40 @@
 .toolbar {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* The mark is a stack of three sticky notes, the only colour in the chrome. */
+.mark {
+  flex: none;
+  filter: drop-shadow(0 1px 1px rgba(58, 46, 36, 0.18));
 }
 
 .title {
   margin: 0;
-  color: var(--chrome-text);
-  font-size: 14px;
+  color: var(--ink);
+  font-size: 15px;
   font-weight: 600;
+  letter-spacing: -0.01em;
   user-select: none;
   -webkit-user-select: none;
   -webkit-user-drag: none;
 }
 
 .add-note-btn {
-  height: 30px;
-  padding: 0 12px;
+  height: 32px;
+  padding: 0 14px;
   border: none;
   border-radius: var(--radius-control);
-  background: var(--accent-strong);
-  color: #ffffff;
-  font-family: inherit;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-ui);
   font-size: var(--font-size-ui);
   font-weight: var(--font-weight-ui);
   cursor: pointer;
@@ -29,10 +42,10 @@
 }
 
 .add-note-btn:hover {
-  background: #2559bd;
+  background: #17130f;
 }
 
 .add-note-btn:focus-visible {
-  outline: 2px solid var(--accent-strong);
+  outline: 2px solid var(--ink);
   outline-offset: 2px;
 }
