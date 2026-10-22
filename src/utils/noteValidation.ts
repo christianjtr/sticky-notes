@@ -40,6 +40,7 @@ export const sanitizeNote = (value: unknown): Note | null => {
         size: { width: candidate.size.width, height: candidate.size.height },
         color: typeof candidate.color === 'string' ? candidate.color : FALLBACK_COLOR,
         zIndex: isFiniteNumber(candidate.zIndex) ? candidate.zIndex : 1,
+        contextId: typeof candidate.contextId === 'string' ? candidate.contextId : undefined,
     };
 };
 

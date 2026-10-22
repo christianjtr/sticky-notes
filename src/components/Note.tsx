@@ -15,6 +15,8 @@ interface NoteProps {
     onBringToFront?: (id: string) => void;
     onDragStart?: () => void;
     onDragEnd?: () => void;
+    /** Colour of the tab that marks the context of the note. */
+    contextColor?: string;
 }
 
 const Note: React.FC<NoteProps> = ({
@@ -24,6 +26,7 @@ const Note: React.FC<NoteProps> = ({
     onBringToFront,
     onDragStart,
     onDragEnd,
+    contextColor,
 }): React.ReactElement => {
     const [isDragging, setIsDragging] = useState(false);
     const [isTouchMoving, setIsTouchMoving] = useState(false);
@@ -209,6 +212,13 @@ const Note: React.FC<NoteProps> = ({
             style={dynamicStyle}
             draggable
         >
+            {contextColor && (
+                <span
+                    className={noteStyles.contextTab}
+                    style={{ backgroundColor: contextColor }}
+                    aria-hidden="true"
+                />
+            )}
             <textarea
                 id={`note-textarea-${note.id}`}
                 name={`note-text-${note.id}`}

@@ -14,6 +14,8 @@ export type NotePatch = Partial<Omit<Note, 'id'>>;
 
 interface UseBoardParams {
     bounds: BoardBounds;
+    /** Context the notes inherit when they are created. */
+    defaultContextId?: string | null;
 }
 
 interface UseBoard {
@@ -43,7 +45,7 @@ const nextTitle = (notes: NotesMap): string => {
     return `Note ${highest + 1}`;
 };
 
-function useBoard({ bounds }: UseBoardParams): UseBoard {
+function useBoard({ bounds, defaultContextId }: UseBoardParams): UseBoard {
     const [notesMap, setNotesMap] = useState<NotesMap>(() => {
         const initialNotes = loadNotes();
         return new Map(initialNotes.map((note) => [note.id, note]));
@@ -110,12 +112,13 @@ function useBoard({ bounds }: UseBoardParams): UseBoard {
                 id,
                 title: nextTitle(prev),
                 zIndex: Math.max(highestZIndex(prev) + 1, BASE_Z_INDEX),
+                contextId: defaultContextId ?? undefined,
                 ...draft,
             };
 
             return new Map(prev).set(id, newNote);
         });
-    }, [bounds]);
+    }, [bounds, defaultContextId]);
 
     const updateNote = useCallback((id: string, patch: NotePatch): void => {
         setNotesMap((prev) => {

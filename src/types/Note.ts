@@ -10,4 +10,6 @@ export interface Note {
     size: Size;
     color: string;
     zIndex: number;
+    /** Id of the context this note belongs to, when it was filed in one. */
+    contextId?: string;
 }

@@ -1,0 +1,112 @@
+.filter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  max-width: 60vw;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.filter > li {
+  display: flex;
+  align-items: center;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-chip);
+  background: transparent;
+  color: var(--chrome-muted);
+  font-family: inherit;
+  font-size: var(--font-size-ui);
+  font-weight: var(--font-weight-ui);
+  cursor: pointer;
+  transition:
+    background-color 150ms ease-in-out 80ms,
+    border-color 150ms ease-in-out 80ms,
+    color 150ms ease-in-out 80ms;
+}
+
+.chip:hover {
+  background: var(--muted);
+  color: var(--chrome-text);
+}
+
+.chip[aria-pressed='true'] {
+  background: var(--chrome-text);
+  border-color: var(--chrome-text);
+  color: #ffffff;
+}
+
+.chip[aria-pressed='true']:hover {
+  background: var(--chrome-text);
+}
+
+.isDropTarget {
+  border-color: var(--accent);
+  background: var(--accent-wash);
+  color: var(--chrome-text);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.addButton {
+  border-style: dashed;
+}
+
+.input {
+  height: 26px;
+  width: 140px;
+  padding: 0 10px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-chip);
+  background: var(--canvas);
+  color: var(--chrome-text);
+  font-family: inherit;
+  font-size: var(--font-size-ui);
+  font-weight: var(--font-weight-ui);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 1px;
+}
+
+.removeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--hairline);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--chrome-muted);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 150ms ease-in-out 80ms, color 150ms ease-in-out 80ms;
+}
+
+.removeButton:hover {
+  background: var(--danger-wash);
+  color: var(--danger-text);
+}
+
+.removeButton:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
+}
