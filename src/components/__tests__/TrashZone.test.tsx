@@ -17,17 +17,21 @@ describe('TrashZone', () => {
         expect(screen.getByRole('region', { name: /Trash zone/ })).toBeInTheDocument();
     });
 
-    it('highlights the zone while a note is dragged over it', () => {
-        render(<TrashZone onDrop={vi.fn()} />);
-
-        const zone = screen.getByRole('region', { name: /Trash zone/ });
-        fireDrag(zone, 'dragenter');
+    it('says what it does while a note is being dragged', () => {
+        render(<TrashZone onDrop={vi.fn()} isDragging />);
 
         expect(screen.getByText('Drop to delete')).toBeInTheDocument();
     });
 
-    it('keeps the highlight when the pointer moves over a child of the zone', () => {
+    it('is quiet while no note is being dragged', () => {
         render(<TrashZone onDrop={vi.fn()} />);
+
+        expect(screen.getByText('Trash')).toBeInTheDocument();
+        expect(screen.queryByText('Drop to delete')).not.toBeInTheDocument();
+    });
+
+    it('keeps the hint when the pointer moves over a child of the zone', () => {
+        render(<TrashZone onDrop={vi.fn()} isDragging />);
 
         const zone = screen.getByRole('region', { name: /Trash zone/ });
         fireDrag(zone, 'dragenter');
@@ -36,14 +40,17 @@ describe('TrashZone', () => {
         expect(screen.getByText('Drop to delete')).toBeInTheDocument();
     });
 
-    it('removes the highlight when the pointer leaves the zone', () => {
+    it('marks the zone while the pointer is over it', () => {
         render(<TrashZone onDrop={vi.fn()} />);
 
         const zone = screen.getByRole('region', { name: /Trash zone/ });
-        fireDrag(zone, 'dragenter');
-        fireDrag(zone, 'dragleave', document.body);
+        const before = zone.className;
 
-        expect(screen.queryByText('Drop to delete')).not.toBeInTheDocument();
+        fireDrag(zone, 'dragenter');
+        expect(zone.className).not.toBe(before);
+
+        fireDrag(zone, 'dragleave', document.body);
+        expect(zone.className).toBe(before);
     });
 
     it('forwards the drop event', async () => {
@@ -54,7 +61,6 @@ describe('TrashZone', () => {
         fireDrag(zone, 'drop');
 
         expect(onDrop).toHaveBeenCalledTimes(1);
-        expect(screen.queryByText('Drop to delete')).not.toBeInTheDocument();
     });
 
     it('can be reached with the keyboard', async () => {

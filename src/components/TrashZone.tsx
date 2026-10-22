@@ -48,11 +48,11 @@ const TrashZone: React.FC<TrashZoneProps> = ({ onDrop, isDragging = false }) => 
       <span role="img" aria-label="trash" className={trashZoneStyles.icon}>
         <svg
           viewBox="0 0 24 24"
-          width="24"
-          height="24"
+          width="18"
+          height="18"
           fill="none"
           stroke="currentColor"
-          strokeWidth="1.5"
+          strokeWidth="1.6"
           strokeLinecap="round"
           strokeLinejoin="round"
           aria-hidden="true"
@@ -63,7 +63,10 @@ const TrashZone: React.FC<TrashZoneProps> = ({ onDrop, isDragging = false }) => 
           <path d="M10 11v6M14 11v6" />
         </svg>
       </span>
-      {isOver && <span className={trashZoneStyles.hint}>Drop to delete</span>}
+      {/* The zone says what it does exactly while a note is being dragged. */}
+      <span className={trashZoneStyles.label}>
+        {isDragging ? 'Drop to delete' : 'Trash'}
+      </span>
     </div>
   );
 };
