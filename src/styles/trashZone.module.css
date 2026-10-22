@@ -1,30 +1,53 @@
 .trashZone {
   position: absolute;
-  bottom: var(--spacing);
-  right: var(--spacing);
-  width: 100px;
-  height: 100px;
-  background: rgba(239, 68, 68, 0.1);
-  border: 2px dashed var(--danger-color);
-  border-radius: var(--border-radius);
-  color: var(--danger-color);
+  bottom: 16px;
+  right: 16px;
+  width: 76px;
+  height: 76px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  background: var(--canvas);
+  color: var(--chrome-muted);
+  box-shadow: 0 2px 8px rgba(15, 23, 31, 0.08);
   z-index: var(--z-trash);
-  transition: var(--transition);
+  transition:
+    background-color 150ms ease-in-out 80ms,
+    border-color 150ms ease-in-out 80ms,
+    color 150ms ease-in-out 80ms,
+    box-shadow 150ms ease-in-out,
+    transform 150ms ease-in-out;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The zone announces that it is ready while a note is being dragged. */
+.isDragNear {
+  border: 1px dashed var(--danger);
+  color: var(--danger-text);
 }
 
 .isOver {
-  background: rgba(239, 68, 68, 0.3);
-  border: 2px solid var(--danger-color);
-  transform: scale(1.15);
-  color: var(--danger-hover);
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+  border: 1px solid var(--danger);
+  background: var(--danger-wash);
+  color: var(--danger-text);
+  box-shadow: 0 6px 18px rgba(15, 23, 31, 0.16);
+  transform: scale(1.04);
 }
 
-.isDragNear {
-  transform: scale(1.05);
-  border-color: var(--danger-hover);
+.hint {
+  position: absolute;
+  bottom: 6px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--danger-text);
 }

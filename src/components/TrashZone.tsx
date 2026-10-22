@@ -45,26 +45,25 @@ const TrashZone: React.FC<TrashZoneProps> = ({ onDrop, isDragging = false }) => 
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
     >
-      <span
-        role="img"
-        aria-label="trash"
-        style={{
-          transform: isOver ? 'rotate(15deg) scale(1.1)' : isDragging ? 'scale(1.05)' : 'none',
-          transition: 'transform 0.2s ease'
-        }}
-      >
-        🗑️
+      <span role="img" aria-label="trash" className={trashZoneStyles.icon}>
+        <svg
+          viewBox="0 0 24 24"
+          width="24"
+          height="24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M4 7h16" />
+          <path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12" />
+          <path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+          <path d="M10 11v6M14 11v6" />
+        </svg>
       </span>
-      {isOver && (
-        <span style={{
-          position: 'absolute',
-          bottom: '8px',
-          fontSize: '12px',
-          fontWeight: 600
-        }}>
-          Drop to delete
-        </span>
-      )}
+      {isOver && <span className={trashZoneStyles.hint}>Drop to delete</span>}
     </div>
   );
 };
