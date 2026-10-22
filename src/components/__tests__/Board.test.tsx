@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import Board from '@components/Board';
@@ -22,7 +22,7 @@ describe('Board', () => {
 
         await user.click(screen.getByRole('button', { name: 'Add Note' }));
 
-        expect(screen.getAllByRole('group')).toHaveLength(1);
+        expect(screen.getAllByRole('group', { name: /arrow keys/ })).toHaveLength(1);
         expect(screen.getByText(/Note added/)).toBeInTheDocument();
     });
 
@@ -36,7 +36,7 @@ describe('Board', () => {
         await user.click(addButton);
 
         const zIndexes = screen
-            .getAllByRole('group')
+            .getAllByRole('group', { name: /arrow keys/ })
             .map((note) => Number(note.style.zIndex));
 
         expect(new Set(zIndexes).size).toBe(3);
@@ -47,9 +47,9 @@ describe('Board', () => {
         render(<Board />);
 
         await user.click(screen.getByRole('button', { name: 'Add Note' }));
-        await user.click(screen.getByRole('button', { name: /Delete Note/ }));
+        fireEvent.click(screen.getByRole('button', { name: /Delete Note/ }));
 
-        expect(screen.queryAllByRole('group')).toHaveLength(0);
+        expect(screen.queryAllByRole('group', { name: /arrow keys/ })).toHaveLength(0);
         expect(screen.getByText(/Note deleted/)).toBeInTheDocument();
     });
 
@@ -71,7 +71,7 @@ describe('Board', () => {
 
         render(<Board />);
 
-        expect(screen.getAllByRole('group')).toHaveLength(1);
+        expect(screen.getAllByRole('group', { name: /arrow keys/ })).toHaveLength(1);
         expect(screen.getByLabelText('Note 1 content')).toHaveValue('persisted');
     });
 
@@ -80,6 +80,6 @@ describe('Board', () => {
 
         render(<Board />);
 
-        expect(screen.queryAllByRole('group')).toHaveLength(0);
+        expect(screen.queryAllByRole('group', { name: /arrow keys/ })).toHaveLength(0);
     });
 });

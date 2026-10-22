@@ -1,47 +1,38 @@
 .toolbar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  padding: 0 var(--spacing);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background: var(--background);
-  border-bottom: 1px solid var(--border-color);
-  z-index: var(--z-toolbar);
+  gap: 12px;
+}
+
+.title {
+  margin: 0;
+  color: var(--chrome-text);
+  font-size: 14px;
+  font-weight: 600;
   user-select: none;
   -webkit-user-select: none;
   -webkit-user-drag: none;
 }
 
-.toolbar__header {
-  color: var(--text-color);
-  font-weight: 600;
-  font-size: 18px;
-  user-select: none;
-  -webkit-user-drag: none;
-}
-
 .add-note-btn {
-  background-color: var(--primary-color);
-  color: white;
-  padding: 8px 16px;
+  height: 30px;
+  padding: 0 12px;
   border: none;
-  border-radius: var(--border-radius);
+  border-radius: var(--radius-control);
+  background: var(--accent-strong);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: var(--font-size-ui);
+  font-weight: var(--font-weight-ui);
   cursor: pointer;
-  font-size: var(--font-size);
-  font-weight: 500;
-  transition: var(--transition);
+  transition: background-color 150ms ease-in-out 80ms;
 }
 
 .add-note-btn:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-1px);
+  background: #2559bd;
 }
 
 .add-note-btn:focus-visible {
-  outline: 2px solid var(--primary-color);
+  outline: 2px solid var(--accent-strong);
   outline-offset: 2px;
 }

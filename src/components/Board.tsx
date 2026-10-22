@@ -19,7 +19,9 @@ interface Announcement {
 
 const Board: React.FC<BoardProps> = ({ enableTrash = true }): React.ReactElement => {
   const boardRef = useRef<HTMLDivElement>(null);
-  const bounds = useBoardBounds(boardRef);
+  const chromeRef = useRef<HTMLDivElement>(null);
+
+  const bounds = useBoardBounds(boardRef, chromeRef);
 
   const { notes, addNote, updateNote, deleteNote, bringToFront } = useBoard({ bounds });
 
@@ -72,7 +74,11 @@ const Board: React.FC<BoardProps> = ({ enableTrash = true }): React.ReactElement
         {announcement.text}
         {announcement.sequence % 2 === 1 ? '\u200B' : ''}
       </div>
-      <Toolbar onAdd={addNote} />
+
+      <div className={boardStyles.chrome} ref={chromeRef}>
+        <Toolbar onAdd={addNote} />
+      </div>
+
       {notes.map(note => (
         <Note
           key={note.id}
@@ -84,6 +90,7 @@ const Board: React.FC<BoardProps> = ({ enableTrash = true }): React.ReactElement
           onDragEnd={handleDragEnd}
         />
       ))}
+
       {enableTrash && <TrashZone onDrop={handleTrashDrop} isDragging={isDragging} />}
     </div>
   );

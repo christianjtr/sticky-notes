@@ -3,10 +3,12 @@
  *
  * The z-index scale is mirrored by the CSS custom properties declared in
  * `src/index.css` (`--z-toolbar`, `--z-note-base`, `--z-trash`). Keep both in
- * sync: notes always paint above the toolbar, and the trash zone always paints
+ * sync: notes always paint above the chrome, and the trash zone always paints
  * above every note.
  */
-export const TOOLBAR_HEIGHT = 60
+
+/** Fallback inset used before the board chrome has been measured. */
+export const DEFAULT_TOP_INSET = 88;
 
 /** Keep in sync with `--z-note-base` in src/index.css. */
 export const BASE_Z_INDEX = 100
