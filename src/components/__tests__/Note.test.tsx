@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import Note from '@components/Note';
@@ -119,13 +119,34 @@ describe('Note', () => {
         expect(onDelete).toHaveBeenCalledWith(note.id);
     });
 
-    it('deletes the note from the delete button', async () => {
+    it('reveals the delete button when the note is hovered', async () => {
         const user = userEvent.setup();
+        renderNote();
+
+        const button = screen.getByRole('button', { name: 'Delete Note 1' });
+        expect(button).toHaveStyle({ pointerEvents: 'none' });
+
+        await user.hover(screen.getByRole('group'));
+
+        expect(button).toHaveStyle({ pointerEvents: 'auto' });
+    });
+
+    it('deletes the note from the delete button', () => {
         const { onDelete } = renderNote();
 
-        await user.click(screen.getByRole('button', { name: 'Delete Note 1' }));
+        // jsdom has no layout, so moving the pointer onto a child of the note
+        // makes the note report a leave. The click is fired directly instead.
+        fireEvent.click(screen.getByRole('button', { name: 'Delete Note 1' }));
 
         expect(onDelete).toHaveBeenCalledWith(note.id);
+    });
+
+    it('keeps the delete button unhittable while the note is not hovered', () => {
+        renderNote();
+
+        expect(screen.getByRole('button', { name: 'Delete Note 1' })).toHaveStyle({
+            pointerEvents: 'none',
+        });
     });
 
     it('resizes the note with the arrow keys on the resize handle', async () => {

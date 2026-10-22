@@ -5,6 +5,7 @@ import type { NotePatch } from '@hooks/useBoard';
 import { useNoteResize } from '@hooks/useNoteResize';
 import { NOTE_GRAB_OFFSET_DATA_KEY, NOTE_ID_DATA_KEY } from '@constants/drag';
 import { KEYBOARD_MOVE_STEP, KEYBOARD_MOVE_STEP_LARGE } from '@constants/note';
+import { getNoteShadow } from '@utils/noteShadow';
 import noteStyles from '@styles/note.module.css';
 
 interface NoteProps {
@@ -24,7 +25,10 @@ const Note: React.FC<NoteProps> = ({
     onDragStart,
     onDragEnd,
 }): React.ReactElement => {
+    const [isDragging, setIsDragging] = useState(false);
     const [isTouchMoving, setIsTouchMoving] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
     const touchStartRef = useRef<{
         startX: number;
         startY: number;
@@ -37,13 +41,16 @@ const Note: React.FC<NoteProps> = ({
         updateNote,
     });
 
-    const dynamicStyle: React.CSSProperties = {
+    const dynamicStyle = {
         width: note.size.width,
         height: note.size.height,
         backgroundColor: note.color,
         zIndex: note.zIndex,
         transform: `translate(${note.position.x}px, ${note.position.y}px)`,
-    };
+        // The shadow is seeded with the id of the note, so the board looks
+        // hand placed without a single note moving.
+        '--note-shadow': getNoteShadow(note.id),
+    } as React.CSSProperties;
 
     const handleDragStart = useCallback((event: React.DragEvent) => {
         const target = event.currentTarget as HTMLElement;
@@ -62,15 +69,13 @@ const Note: React.FC<NoteProps> = ({
         );
         event.dataTransfer.effectAllowed = 'move';
 
-        target.classList.add(noteStyles.isDraggingEffect);
-
         event.stopPropagation();
+        setIsDragging(true);
         onDragStart?.();
     }, [note.id, note.title, onDragStart]);
 
-    const handleDragEnd = useCallback((event: React.DragEvent) => {
-        const target = event.currentTarget as HTMLElement;
-        target.classList.remove(noteStyles.isDraggingEffect);
+    const handleDragEnd = useCallback(() => {
+        setIsDragging(false);
         onDragEnd?.();
     }, [onDragEnd]);
 
@@ -141,8 +146,21 @@ const Note: React.FC<NoteProps> = ({
     }, [note.id, note.position, updateNote, onDelete]);
 
     const handleFocus = useCallback(() => {
+        setIsFocused(true);
         onBringToFront?.(note.id);
     }, [note.id, onBringToFront]);
+
+    const handleBlur = useCallback(() => {
+        setIsFocused(false);
+    }, []);
+
+    const handlePointerEnter = useCallback(() => {
+        setIsHovered(true);
+    }, []);
+
+    const handlePointerLeave = useCallback(() => {
+        setIsHovered(false);
+    }, []);
 
     const handlePointerDown = useCallback(() => {
         onBringToFront?.(note.id);
@@ -164,7 +182,7 @@ const Note: React.FC<NoteProps> = ({
 
     const classNames = [
         noteStyles.note,
-        isTouchMoving ? noteStyles.isDraggingEffect : '',
+        isDragging || isTouchMoving ? noteStyles.isDraggingEffect : '',
         isResizing ? noteStyles.isResizing : '',
     ]
         .filter(Boolean)
@@ -180,6 +198,9 @@ const Note: React.FC<NoteProps> = ({
             onDragEnd={handleDragEnd}
             onKeyDown={handleKeyDown}
             onFocus={handleFocus}
+            onBlur={handleBlur}
+            onPointerEnter={handlePointerEnter}
+            onPointerLeave={handlePointerLeave}
             onPointerDown={handlePointerDown}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
@@ -199,7 +220,9 @@ const Note: React.FC<NoteProps> = ({
             />
             <button
                 type="button"
-                className={noteStyles.deleteButton}
+                className={`${noteStyles.deleteButton} ${
+                    isHovered || isFocused ? noteStyles.isDeleteVisible : ''
+                }`}
                 aria-label={`Delete ${note.title}`}
                 onClick={handleDeleteClick}
                 onDragStart={handleButtonDragStart}
