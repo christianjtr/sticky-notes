@@ -5,6 +5,7 @@
     "author": "Christian José Torrealba Rondón",
     "description": "Simple sticky notes tool built with React and TypeScript using Vite",
     "type": "module",
+    "packageManager": "pnpm@12.9.1",
     "engines": {
         "node": ">=20.19.0"
     },
