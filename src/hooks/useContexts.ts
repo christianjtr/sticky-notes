@@ -23,7 +23,7 @@ interface UseContexts {
 
 function useContexts(): UseContexts {
     const [contexts, setContexts] = useState<Context[]>(() => loadContexts());
-    const [activeContextId, setActiveContextIdState] = useState<string | null>(
+    const [selectedContextId, setSelectedContextIdState] = useState<string | null>(
         () => loadActiveContextId()
     );
 
@@ -77,14 +77,21 @@ function useContexts(): UseContexts {
         };
     }, [flushSave]);
 
+    // A context that no longer exists must not hide the whole board.
+    const activeContextId = contexts.some(
+        (context) => context.id === selectedContextId
+    )
+        ? selectedContextId
+        : null;
+
     const setActiveContextId = useCallback((id: string | null): void => {
-        setActiveContextIdState(id);
+        setSelectedContextIdState(id);
         saveActiveContextId(id);
     }, []);
 
     const toggleContext = useCallback((id: string): void => {
         const next = activeContextId === id ? null : id;
-        setActiveContextIdState(next);
+        setSelectedContextIdState(next);
         saveActiveContextId(next);
     }, [activeContextId]);
 
@@ -106,7 +113,7 @@ function useContexts(): UseContexts {
         setContexts((prev) => prev.filter((context) => context.id !== id));
 
         if (activeContextId === id) {
-            setActiveContextIdState(null);
+            setSelectedContextIdState(null);
             saveActiveContextId(null);
         }
     }, [activeContextId]);

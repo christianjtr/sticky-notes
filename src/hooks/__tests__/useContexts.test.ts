@@ -121,6 +121,14 @@ describe('useContexts', () => {
         expect(result.current.activeContextId).toBeNull();
     });
 
+    it('ignores an active context that no longer exists', () => {
+        localStorage.setItem(ACTIVE_KEY, 'context-gone');
+
+        const { result } = renderHook(() => useContexts());
+
+        expect(result.current.activeContextId).toBeNull();
+    });
+
     it('persists the contexts once the debounce elapsed', () => {
         const { result } = renderHook(() => useContexts());
 
