@@ -10,7 +10,7 @@
   justify-content: space-between;
   background: var(--background);
   border-bottom: 1px solid var(--border-color);
-  z-index: 10;
+  z-index: var(--z-toolbar);
   user-select: none;
   -webkit-user-select: none;
   -webkit-user-drag: none;
@@ -20,7 +20,6 @@
   color: var(--text-color);
   font-weight: 600;
   font-size: 18px;
-  pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
 }
@@ -42,7 +41,7 @@
   transform: translateY(-1px);
 }
 
-.add-note-btn:focus {
+.add-note-btn:focus-visible {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }

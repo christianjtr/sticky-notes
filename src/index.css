@@ -1,6 +1,6 @@
 :root {
-  --primary-color: #6366f1;
-  --primary-hover: #4f46e5;
+  --primary-color: #4f46e5;
+  --primary-hover: #4338ca;
   --danger-color: #ef4444;
   --danger-hover: #b91c1c;
   --background: #ffffff;
@@ -14,6 +14,11 @@
   --spacing: 16px;
   --font-size: 14px;
   --font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+  /* Stacking scale, mirrored by src/constants/board.ts */
+  --z-toolbar: 10;
+  --z-note-base: 100;
+  --z-trash: 100000;
 }
 
 .sr-only {
@@ -47,4 +52,11 @@ body {
   background-color: var(--background-secondary);
   line-height: 1.5;
   font-weight: 400;
+}
+
+@media (max-height: 600px) {
+  #root {
+    height: auto;
+    min-height: 100vh;
+  }
 }
