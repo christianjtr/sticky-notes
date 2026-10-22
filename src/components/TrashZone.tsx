@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from 'react'
-import trashZoneStyles from '@styles/trashZone.module.css'
+import { useState, useCallback } from 'react';
+import type React from 'react';
+import trashZoneStyles from '@styles/trashZone.module.css';
 
 interface TrashZoneProps {
   onDrop: (event: React.DragEvent) => void;
@@ -19,7 +20,12 @@ const TrashZone: React.FC<TrashZoneProps> = ({ onDrop, isDragging = false }) => 
     setIsOver(true)
   }, [])
 
-  const handleDragLeave = useCallback(() => {
+  const handleDragLeave = useCallback((event: React.DragEvent): void => {
+    // Moving the pointer over a child of the zone also fires `dragleave` on
+    // the zone itself, so the highlight is only removed when the pointer
+    // actually leaves the zone.
+    if (event.currentTarget.contains(event.relatedTarget as Node | null)) return
+
     setIsOver(false)
   }, [])
 
@@ -31,19 +37,18 @@ const TrashZone: React.FC<TrashZoneProps> = ({ onDrop, isDragging = false }) => 
   return (
     <div
       id="trash-zone"
-      role="button"
-      aria-label="Drop zone to delete notes. Drag notes here to remove them."
-      aria-dropeffect="move"
+      role="region"
+      aria-label="Trash zone. Drag notes here to remove them."
       className={`${trashZoneStyles.trashZone} ${isOver ? trashZoneStyles.isOver : ''} ${isDragging && !isOver ? trashZoneStyles.isDragNear : ''}`}
       onDragOver={handleOnDragOver}
       onDrop={handleOnDrop}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
     >
-      <span 
-        role="img" 
-        aria-label="trash" 
-        style={{ 
+      <span
+        role="img"
+        aria-label="trash"
+        style={{
           transform: isOver ? 'rotate(15deg) scale(1.1)' : isDragging ? 'scale(1.05)' : 'none',
           transition: 'transform 0.2s ease'
         }}
@@ -51,9 +56,9 @@ const TrashZone: React.FC<TrashZoneProps> = ({ onDrop, isDragging = false }) => 
         🗑️
       </span>
       {isOver && (
-        <span style={{ 
-          position: 'absolute', 
-          bottom: '8px', 
+        <span style={{
+          position: 'absolute',
+          bottom: '8px',
           fontSize: '12px',
           fontWeight: 600
         }}>
@@ -61,7 +66,7 @@ const TrashZone: React.FC<TrashZoneProps> = ({ onDrop, isDragging = false }) => 
         </span>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default TrashZone
+export default TrashZone;

@@ -11,9 +11,12 @@
     overflow: hidden;
     will-change: transform;
     transition: box-shadow var(--transition);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
 }
 
-.note:focus {
+.note:focus-visible {
     outline: 2px solid var(--primary-color);
     outline-offset: 2px;
 }
@@ -23,11 +26,8 @@
     box-shadow: 0 4px 16px var(--shadow);
 }
 
-.noteContentWrapper {
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-user-drag: none;
-    pointer-events: none;
+.isResizing {
+    box-shadow: 0 8px 24px var(--shadow-hover);
 }
 
 .textarea {
@@ -42,21 +42,70 @@
     font-size: var(--font-size);
     color: var(--text-color);
     z-index: 1;
+    /* The note is not selectable, its text is. */
+    user-select: text;
+    -webkit-user-select: text;
+    touch-action: none;
+}
+
+.deleteButton {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--text-color);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity var(--transition), background-color var(--transition);
+    z-index: 2;
+}
+
+.note:hover .deleteButton,
+.note:focus-within .deleteButton,
+.deleteButton:focus-visible {
+    opacity: 1;
+}
+
+.deleteButton:hover {
+    background: var(--danger-color);
+    color: #ffffff;
+}
+
+.deleteButton:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+    opacity: 1;
 }
 
 .resizeHandle {
     position: absolute;
     bottom: 0;
     right: 0;
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
     background: var(--border-color);
     clip-path: polygon(100% 0%, 0% 100%, 100% 100%);
-    z-index: 10;
+    z-index: 3;
     cursor: nw-resize;
+    touch-action: none;
 }
 
 .resizeHandle:hover,
-.resizeHandle:focus {
+.resizeHandle:focus-visible {
     background: var(--primary-color);
+}
+
+.resizeHandle:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 1px;
 }

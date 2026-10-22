@@ -1,39 +1,77 @@
-import React, { useState, useCallback } from 'react'
-import { useBoard } from '@hooks/useBoard'
-import { useBoardDragAndDrop } from '@hooks/useBoardDragAndDrop'
-import Note from './Note'
-import Toolbar from './Toolbar'
-import TrashZone from './TrashZone'
-import boardStyles from '@styles/board.module.css'
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type React from 'react';
+import { useBoard } from '@hooks/useBoard';
+import { useBoardDragAndDrop } from '@hooks/useBoardDragAndDrop';
+import { useBoardBounds } from '@hooks/useBoardBounds';
+import Note from './Note';
+import Toolbar from './Toolbar';
+import TrashZone from './TrashZone';
+import boardStyles from '@styles/board.module.css';
 
 interface BoardProps {
   enableTrash?: boolean;
 }
 
-const Board: React.FC<BoardProps> = ({ enableTrash = true }): React.ReactElement => {
-  const { notes, addNote, updateNote, deleteNote } = useBoard()
-  const [isDragging, setIsDragging] = useState(false)
+interface Announcement {
+  text: string;
+  sequence: number;
+}
 
-  const handleDragStart = useCallback(() => setIsDragging(true), [])
-  const handleDragEnd = useCallback(() => setIsDragging(false), [])
+const Board: React.FC<BoardProps> = ({ enableTrash = true }): React.ReactElement => {
+  const boardRef = useRef<HTMLDivElement>(null);
+  const bounds = useBoardBounds(boardRef);
+
+  const { notes, addNote, updateNote, deleteNote, bringToFront } = useBoard({ bounds });
+
+  const [isDragging, setIsDragging] = useState(false);
+  const [announcement, setAnnouncement] = useState<Announcement>({ text: '', sequence: 0 });
+
+  const handleDragStart = useCallback(() => setIsDragging(true), []);
+  const handleDragEnd = useCallback(() => setIsDragging(false), []);
 
   const { handleBoardDragOver, handleBoardDrop, handleTrashDrop } = useBoardDragAndDrop({
     notes,
     updateNote,
     deleteNote,
+    bounds,
     onDragEnd: handleDragEnd,
-  })
+  });
+
+  const previousCountRef = useRef(notes.length);
+
+  useEffect(() => {
+    if (notes.length === previousCountRef.current) return;
+
+    const added = notes.length > previousCountRef.current;
+    previousCountRef.current = notes.length;
+
+    setAnnouncement((prev) => ({
+      text: `${added ? 'Note added' : 'Note deleted'}. ${notes.length} ${
+        notes.length === 1 ? 'note' : 'notes'
+      } on the board.`,
+      sequence: prev.sequence + 1,
+    }));
+  }, [notes.length]);
 
   return (
     <div
       id="sticky-notes-board"
+      ref={boardRef}
       role="main"
       aria-label="Sticky notes workspace"
       className={boardStyles.board}
       onDragOver={handleBoardDragOver}
       onDrop={handleBoardDrop}
     >
-      <div aria-live="polite" aria-atomic="true" className="sr-only" id="board-announcements"></div>
+      <div
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+        id="board-announcements"
+      >
+        {announcement.text}
+        {announcement.sequence % 2 === 1 ? '\u200B' : ''}
+      </div>
       <Toolbar onAdd={addNote} />
       {notes.map(note => (
         <Note
@@ -41,13 +79,14 @@ const Board: React.FC<BoardProps> = ({ enableTrash = true }): React.ReactElement
           note={note}
           updateNote={updateNote}
           onDelete={deleteNote}
+          onBringToFront={bringToFront}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         />
       ))}
       {enableTrash && <TrashZone onDrop={handleTrashDrop} isDragging={isDragging} />}
     </div>
-  )
-}
+  );
+};
 
-export default Board
+export default Board;

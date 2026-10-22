@@ -28,10 +28,9 @@
 
         "paths": {
             "@app-types/*": ["src/types/*"],
-            "@assets": ["src/assets"],
-            "@assets/*": ["src/assets/*"],
             "@components": ["src/components"],
             "@components/*": ["src/components/*"],
+            "@constants/*": ["src/constants/*"],
             "@hooks/*": ["src/hooks/*"],
             "@services/*": ["src/services/*"],
             "@styles/*": ["src/styles/*"],

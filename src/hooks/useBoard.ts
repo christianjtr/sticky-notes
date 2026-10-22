@@ -1,83 +1,166 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
-import type { Note } from '@app-types/Note'
-import { loadNotes, saveNotes } from '@services/NotesStorageService'
-import { createDefaultNote } from '@utils/noteDefaultGenerator'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { Note } from '@app-types/Note';
+import type { BoardBounds } from '@app-types/BoardBounds';
+import { loadNotes, saveNotes } from '@services/NotesStorageService';
+import { createDefaultNote } from '@utils/noteDefaultGenerator';
+import { clampPosition } from '@utils/noteBounds';
+import { createId } from '@utils/createId';
+import { BASE_Z_INDEX } from '@constants/board';
 
-type NotesMap = Map<string, Note>;
+export type NotesMap = Map<string, Note>;
+
+/** Fields of a note that can be changed without replacing the whole entity. */
+export type NotePatch = Partial<Omit<Note, 'id'>>;
+
+interface UseBoardParams {
+    bounds: BoardBounds;
+}
 
 interface UseBoard {
     notes: Note[];
     addNote: () => void;
-    updateNote: (payload: Note) => void;
+    updateNote: (id: string, patch: NotePatch) => void;
     deleteNote: (id: string) => void;
+    bringToFront: (id: string) => void;
 }
 
-const SAVE_DEBOUNCE_MS = 500
+const SAVE_DEBOUNCE_MS = 500;
 
-function useBoard(): UseBoard {
+const highestZIndex = (notes: NotesMap): number => {
+    let highest = 0;
+    notes.forEach((note) => {
+        if (note.zIndex > highest) highest = note.zIndex;
+    });
+    return highest;
+};
+
+const nextTitle = (notes: NotesMap): string => {
+    let highest = 0;
+    notes.forEach((note) => {
+        const match = /^Note (\d+)$/.exec(note.title);
+        if (match) highest = Math.max(highest, Number(match[1]));
+    });
+    return `Note ${highest + 1}`;
+};
+
+function useBoard({ bounds }: UseBoardParams): UseBoard {
     const [notesMap, setNotesMap] = useState<NotesMap>(() => {
-        const initialNotes = loadNotes()
-        return new Map(initialNotes.map(note => [note.id, note]))
-    })
+        const initialNotes = loadNotes();
+        return new Map(initialNotes.map((note) => [note.id, note]));
+    });
 
-    const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const notesRef = useRef<NotesMap>(notesMap);
 
     useEffect(() => {
-        if (saveTimeoutRef.current) {
-            clearTimeout(saveTimeoutRef.current)
+        notesRef.current = notesMap;
+    }, [notesMap]);
+
+    const flushSave = useCallback(() => {
+        if (saveTimeoutRef.current !== null) {
+            clearTimeout(saveTimeoutRef.current);
+            saveTimeoutRef.current = null;
+        }
+        saveNotes([...notesRef.current.values()]);
+    }, []);
+
+    // Persistence is debounced so that typing in a note does not write to
+    // localStorage on every keystroke.
+    useEffect(() => {
+        if (saveTimeoutRef.current !== null) {
+            clearTimeout(saveTimeoutRef.current);
         }
 
         saveTimeoutRef.current = setTimeout(() => {
-            const notesToSave = [...notesMap.values()]
-            saveNotes(notesToSave)
-        }, SAVE_DEBOUNCE_MS)
+            saveTimeoutRef.current = null;
+            saveNotes([...notesMap.values()]);
+        }, SAVE_DEBOUNCE_MS);
 
         return () => {
-            if (saveTimeoutRef.current) {
-                clearTimeout(saveTimeoutRef.current)
+            if (saveTimeoutRef.current !== null) {
+                clearTimeout(saveTimeoutRef.current);
+                saveTimeoutRef.current = null;
             }
-        }
-    }, [notesMap])
+        };
+    }, [notesMap]);
+
+    // The debounce above would drop the last edit when the tab is closed or
+    // reloaded right after typing, so pending changes are flushed on unload.
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'hidden') flushSave();
+        };
+
+        window.addEventListener('pagehide', flushSave);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            window.removeEventListener('pagehide', flushSave);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            flushSave();
+        };
+    }, [flushSave]);
 
     const addNote = useCallback(() => {
-        const id = crypto.randomUUID();
+        const id = createId();
+        const draft = createDefaultNote(bounds);
 
-        const newNote: Note = {
-            id,
-            zIndex: notesMap.size + 1,
-            ...createDefaultNote(),
-        }
+        setNotesMap((prev) => {
+            const newNote: Note = {
+                id,
+                title: nextTitle(prev),
+                zIndex: Math.max(highestZIndex(prev) + 1, BASE_Z_INDEX),
+                ...draft,
+            };
 
-        setNotesMap(prev => new Map(prev).set(id, newNote))
-    }, [notesMap.size])
+            return new Map(prev).set(id, newNote);
+        });
+    }, [bounds]);
 
-    const updateNote = useCallback((payload: Note): void => {
-        setNotesMap(prev => {
-            if (!prev.has(payload.id)) {
-                return prev
-            }
+    const updateNote = useCallback((id: string, patch: NotePatch): void => {
+        setNotesMap((prev) => {
+            const current = prev.get(id);
+            if (!current) return prev;
 
-            return new Map(prev).set(payload.id, payload)
-        })
-    }, [])
+            const next: Note = { ...current, ...patch };
+            next.position = clampPosition(next.position, next.size, bounds);
+
+            return new Map(prev).set(id, next);
+        });
+    }, [bounds]);
 
     const deleteNote = useCallback((id: string): void => {
-        setNotesMap(prev => {
-            const notesMap = new Map(prev)
-            notesMap.delete(id)
+        setNotesMap((prev) => {
+            const next = new Map(prev);
+            next.delete(id);
+            return next;
+        });
+    }, []);
 
-            return notesMap
-        })
-    }, [])
+    const bringToFront = useCallback((id: string): void => {
+        setNotesMap((prev) => {
+            const current = prev.get(id);
+            if (!current) return prev;
 
-    const notesToBeRendered = [...notesMap.values()].sort((a, b) => b.zIndex - a.zIndex)
+            const highest = highestZIndex(prev);
+            if (current.zIndex >= highest) return prev;
+
+            return new Map(prev).set(id, { ...current, zIndex: highest + 1 });
+        });
+    }, []);
+
+    const notes = useMemo(
+        () => [...notesMap.values()].sort((a, b) => a.zIndex - b.zIndex),
+        [notesMap]
+    );
 
     return {
-        notes: notesToBeRendered,
+        notes,
         addNote,
         updateNote,
-        deleteNote
-    }
+        deleteNote,
+        bringToFront,
+    };
 }
 
-export { useBoard }
+export { useBoard };

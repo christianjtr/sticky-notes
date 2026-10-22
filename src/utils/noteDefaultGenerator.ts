@@ -1,23 +1,20 @@
-import type { Note } from '@app-types/Note'
-import type { Position } from '@app-types/Position'
+import type { Note } from '@app-types/Note';
+import type { BoardBounds } from '@app-types/BoardBounds';
+import { DEFAULT_NOTE_HEIGHT, DEFAULT_NOTE_WIDTH } from '@constants/note';
+import { generateRandomPosition } from '@utils/noteBounds';
 
-export const DEFAULT_NOTE_WIDTH = 240
-export const DEFAULT_NOTE_HEIGHT = 160
+export const generateRandomColor = (): string =>
+    `hsl(${Math.floor(Math.random() * 360)}, 70%, 85%)`;
 
-export const generateRandomPosition = (): Position => ({
-    x: 80 + Math.random() * 400,
-    y: 80 + Math.random() * 300,
-})
-
-export const generateRandomColor = (): string => `hsl(${Math.random() * 360}, 70%, 85%)`
-
-export const createDefaultNote = (): Omit<Note, 'id' | 'zIndex' | 'text'> => {
-    const { x, y } = generateRandomPosition()
-    const color = generateRandomColor()
+export const createDefaultNote = (
+    bounds: BoardBounds
+): Omit<Note, 'id' | 'title' | 'zIndex'> => {
+    const size = { width: DEFAULT_NOTE_WIDTH, height: DEFAULT_NOTE_HEIGHT };
 
     return {
-        position: { x, y },
-        size: { width: DEFAULT_NOTE_WIDTH, height: DEFAULT_NOTE_HEIGHT },
-        color,
-    }
-}
+        position: generateRandomPosition(size, bounds),
+        size,
+        color: generateRandomColor(),
+        text: '',
+    };
+};

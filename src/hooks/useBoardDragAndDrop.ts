@@ -1,10 +1,16 @@
-import React, { useCallback } from 'react'
-import type { Note } from '@app-types/Note'
+import { useCallback } from 'react';
+import type React from 'react';
+import type { Note } from '@app-types/Note';
+import type { BoardBounds } from '@app-types/BoardBounds';
+import type { NotePatch } from '@hooks/useBoard';
+import { NOTE_GRAB_OFFSET_DATA_KEY, NOTE_ID_DATA_KEY } from '@constants/drag';
+import { computeDropPosition, parseGrabOffset } from '@utils/noteBounds';
 
 interface UseBoardDragAndDropParams {
     notes: Note[];
-    updateNote: (note: Note) => void;
+    updateNote: (id: string, patch: NotePatch) => void;
     deleteNote: (id: string) => void;
+    bounds: BoardBounds;
     onDragEnd?: () => void;
 }
 
@@ -14,48 +20,62 @@ interface UseBoardDragAndDrop {
     handleTrashDrop: (event: React.DragEvent) => void;
 }
 
-export const useBoardDragAndDrop = ({ notes, updateNote, deleteNote, onDragEnd }: UseBoardDragAndDropParams): UseBoardDragAndDrop => {
-
-    const getNoteId = (event: React.DragEvent): string => {
-        return event.dataTransfer.getData('noteId')
-    }
-
+export const useBoardDragAndDrop = ({
+    notes,
+    updateNote,
+    deleteNote,
+    bounds,
+    onDragEnd,
+}: UseBoardDragAndDropParams): UseBoardDragAndDrop => {
     const handleBoardDragOver = useCallback((event: React.DragEvent): void => {
-        event.preventDefault()
-    }, [])
+        event.preventDefault();
+    }, []);
 
     const handleBoardDrop = useCallback((event: React.DragEvent): void => {
-        event.preventDefault()
+        event.preventDefault();
 
-        const noteId = getNoteId(event)
-        const note = notes.find(n => n.id === noteId)
+        const noteId = event.dataTransfer.getData(NOTE_ID_DATA_KEY);
+        const note = notes.find((candidate) => candidate.id === noteId);
 
         if (note) {
-            const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
-            const x = event.clientX - rect.left
-            const y = event.clientY - rect.top
+            const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+            const grabOffset = parseGrabOffset(
+                event.dataTransfer.getData(NOTE_GRAB_OFFSET_DATA_KEY)
+            );
 
-            updateNote({ ...note, position: { x, y } })
+            const position = computeDropPosition({
+                clientX: event.clientX,
+                clientY: event.clientY,
+                boardRect: { left: rect.left, top: rect.top },
+                grabOffset,
+                size: note.size,
+                bounds,
+            });
+
+            updateNote(note.id, { position });
         }
 
-        onDragEnd?.()
-    }, [notes, updateNote, onDragEnd])
+        onDragEnd?.();
+    }, [notes, updateNote, bounds, onDragEnd]);
 
-    const handleTrashDrop = useCallback((event: React.DragEvent) => {
-        event.preventDefault()
+    const handleTrashDrop = useCallback((event: React.DragEvent): void => {
+        // The trash zone lives inside the board, so the event must not reach
+        // the board drop handler that repositions the dropped note.
+        event.preventDefault();
+        event.stopPropagation();
 
-        const noteId = getNoteId(event)
+        const noteId = event.dataTransfer.getData(NOTE_ID_DATA_KEY);
 
         if (noteId) {
-            deleteNote(noteId)
+            deleteNote(noteId);
         }
 
-        onDragEnd?.()
-    }, [deleteNote, onDragEnd])
+        onDragEnd?.();
+    }, [deleteNote, onDragEnd]);
 
     return {
         handleBoardDragOver,
         handleBoardDrop,
         handleTrashDrop,
-    }
-}
+    };
+};

@@ -1,204 +1,224 @@
-import React, { useCallback, useEffect, useRef, useState, memo } from 'react'
-import type { Note as NoteType } from '@app-types/Note'
-import noteStyles from '@styles/note.module.css'
+import { useCallback, useRef, useState, memo } from 'react';
+import type React from 'react';
+import type { Note as NoteType } from '@app-types/Note';
+import type { NotePatch } from '@hooks/useBoard';
+import { useNoteResize } from '@hooks/useNoteResize';
+import { NOTE_GRAB_OFFSET_DATA_KEY, NOTE_ID_DATA_KEY } from '@constants/drag';
+import { KEYBOARD_MOVE_STEP, KEYBOARD_MOVE_STEP_LARGE } from '@constants/note';
+import noteStyles from '@styles/note.module.css';
 
 interface NoteProps {
-  note: NoteType;
-  updateNote: (note: NoteType) => void;
-  onDelete?: (id: string) => void;
-  onDragStart?: () => void;
-  onDragEnd?: () => void;
+    note: NoteType;
+    updateNote: (id: string, patch: NotePatch) => void;
+    onDelete?: (id: string) => void;
+    onBringToFront?: (id: string) => void;
+    onDragStart?: () => void;
+    onDragEnd?: () => void;
 }
 
-const Note: React.FC<NoteProps> = ({ note, updateNote, onDelete, onDragStart, onDragEnd }): React.ReactElement => {
-  const [isTouchMoving, setIsTouchMoving] = useState(false)
-  const touchStartRef = useRef<{ startX: number; startY: number; startNoteX: number; startNoteY: number } | null>(null)
-  const resizeRef = useRef<{ startX: number; startY: number; startW: number; startH: number } | null>(null)
-  const isResizing = useRef(false)
-  const handlePointerMoveRef = useRef<(event: PointerEvent) => void>(() => {})
-  const handlePointerUpRef = useRef<() => void>(() => {})
+const Note: React.FC<NoteProps> = ({
+    note,
+    updateNote,
+    onDelete,
+    onBringToFront,
+    onDragStart,
+    onDragEnd,
+}): React.ReactElement => {
+    const [isTouchMoving, setIsTouchMoving] = useState(false);
+    const touchStartRef = useRef<{
+        startX: number;
+        startY: number;
+        startNoteX: number;
+        startNoteY: number;
+    } | null>(null);
 
-  const dynamicStyle: React.CSSProperties = {
-    width: note.size.width,
-    height: note.size.height,
-    backgroundColor: note.color,
-    zIndex: note.zIndex,
-    transform: `translate(${note.position.x}px, ${note.position.y}px)`,
-  }
+    const { isResizing, handleResizeStart, handleResizeKeyDown } = useNoteResize({
+        note,
+        updateNote,
+    });
 
-  const handleDragStart = useCallback((event: React.DragEvent) => {
-    event.dataTransfer.setData('noteId', note.id)
-    event.dataTransfer.effectAllowed = 'move'
+    const dynamicStyle: React.CSSProperties = {
+        width: note.size.width,
+        height: note.size.height,
+        backgroundColor: note.color,
+        zIndex: note.zIndex,
+        transform: `translate(${note.position.x}px, ${note.position.y}px)`,
+    };
 
-    const target = event.currentTarget as HTMLElement
-    target.classList.add(noteStyles.isDraggingEffect)
+    const handleDragStart = useCallback((event: React.DragEvent) => {
+        const target = event.currentTarget as HTMLElement;
+        const rect = target.getBoundingClientRect();
 
-    event.stopPropagation();
-    onDragStart?.()
-  }, [note.id, onDragStart])
+        event.dataTransfer.setData(NOTE_ID_DATA_KEY, note.id);
+        // Firefox only starts a drag when some payload was set, and the title
+        // is a sensible fallback for dropping the note as plain text.
+        event.dataTransfer.setData('text/plain', note.title);
+        event.dataTransfer.setData(
+            NOTE_GRAB_OFFSET_DATA_KEY,
+            JSON.stringify({
+                x: event.clientX - rect.left,
+                y: event.clientY - rect.top,
+            })
+        );
+        event.dataTransfer.effectAllowed = 'move';
 
-  const handleDragEnd = useCallback((event: React.DragEvent) => {
-    const target = event.currentTarget as HTMLElement
-    target.classList.remove(noteStyles.isDraggingEffect)
-    onDragEnd?.()
-  }, [onDragEnd])
+        target.classList.add(noteStyles.isDraggingEffect);
 
-  const handlePointerMove = useCallback((event: PointerEvent) => {
-    if (!resizeRef.current || !isResizing.current) return
+        event.stopPropagation();
+        onDragStart?.();
+    }, [note.id, note.title, onDragStart]);
 
-    const { startX, startY, startW, startH } = resizeRef.current
-    updateNote({
-      ...note,
-      size: {
-        width: Math.max(100, startW + (event.clientX - startX)),
-        height: Math.max(100, startH + (event.clientY - startY)),
-      }
-    })
-  }, [note, updateNote])
+    const handleDragEnd = useCallback((event: React.DragEvent) => {
+        const target = event.currentTarget as HTMLElement;
+        target.classList.remove(noteStyles.isDraggingEffect);
+        onDragEnd?.();
+    }, [onDragEnd]);
 
-  const handlePointerUp = useCallback(() => {
-    isResizing.current = false
-    resizeRef.current = null
-    document.removeEventListener('pointermove', handlePointerMoveRef.current)
-    document.removeEventListener('pointerup', handlePointerUpRef.current)
-  }, [])
+    const handleTouchStart = useCallback((event: React.TouchEvent) => {
+        if (event.touches.length !== 1) return;
 
-  const handleTouchStart = useCallback((event: React.TouchEvent) => {
-    if (event.touches.length === 1) {
-      touchStartRef.current = {
-        startX: event.touches[0].clientX,
-        startY: event.touches[0].clientY,
-        startNoteX: note.position.x,
-        startNoteY: note.position.y,
-      }
-      setIsTouchMoving(true)
-    }
-  }, [note.position])
+        touchStartRef.current = {
+            startX: event.touches[0].clientX,
+            startY: event.touches[0].clientY,
+            startNoteX: note.position.x,
+            startNoteY: note.position.y,
+        };
+        setIsTouchMoving(true);
+    }, [note.position]);
 
-  const handleTouchMove = useCallback((event: React.TouchEvent) => {
-    if (!touchStartRef.current || event.touches.length !== 1) return
+    const handleTouchMove = useCallback((event: React.TouchEvent) => {
+        const origin = touchStartRef.current;
+        if (!origin || event.touches.length !== 1) return;
 
-    const touch = event.touches[0]
-    const { startX, startY, startNoteX, startNoteY } = touchStartRef.current
-    const deltaX = touch.clientX - startX
-    const deltaY = touch.clientY - startY
+        const touch = event.touches[0];
 
-    updateNote({
-      ...note,
-      position: { x: startNoteX + deltaX, y: startNoteY + deltaY }
-    })
-  }, [note, updateNote])
+        updateNote(note.id, {
+            position: {
+                x: origin.startNoteX + (touch.clientX - origin.startX),
+                y: origin.startNoteY + (touch.clientY - origin.startY),
+            },
+        });
+    }, [note.id, updateNote]);
 
-  const handleTouchEnd = useCallback(() => {
-    touchStartRef.current = null
-    setIsTouchMoving(false)
-  }, [])
+    const handleTouchEnd = useCallback(() => {
+        touchStartRef.current = null;
+        setIsTouchMoving(false);
+    }, []);
 
-  useEffect(() => {
-    handlePointerMoveRef.current = handlePointerMove
-    handlePointerUpRef.current = handlePointerUp
-  }, [handlePointerMove, handlePointerUp])
+    const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
+        // Keys pressed inside the textarea belong to the textarea: the caret
+        // must move and the text must be editable.
+        if (event.target !== event.currentTarget) return;
 
-  const handleResize = useCallback((event: React.PointerEvent) => {
-    event.preventDefault()
+        const moveAmount = event.shiftKey ? KEYBOARD_MOVE_STEP_LARGE : KEYBOARD_MOVE_STEP;
+        const { x, y } = note.position;
 
-    isResizing.current = true
-    resizeRef.current = {
-      startX: event.clientX,
-      startY: event.clientY,
-      startW: note.size.width,
-      startH: note.size.height,
-    }
+        switch (event.key) {
+            case 'ArrowUp':
+                event.preventDefault();
+                updateNote(note.id, { position: { x, y: y - moveAmount } });
+                break;
+            case 'ArrowDown':
+                event.preventDefault();
+                updateNote(note.id, { position: { x, y: y + moveAmount } });
+                break;
+            case 'ArrowLeft':
+                event.preventDefault();
+                updateNote(note.id, { position: { x: x - moveAmount, y } });
+                break;
+            case 'ArrowRight':
+                event.preventDefault();
+                updateNote(note.id, { position: { x: x + moveAmount, y } });
+                break;
+            case 'Delete':
+            case 'Backspace':
+                event.preventDefault();
+                onDelete?.(note.id);
+                break;
+            default:
+                break;
+        }
+    }, [note.id, note.position, updateNote, onDelete]);
 
-    document.addEventListener('pointermove', handlePointerMoveRef.current)
-    document.addEventListener('pointerup', handlePointerUpRef.current)
-  }, [note.size])
+    const handleFocus = useCallback(() => {
+        onBringToFront?.(note.id);
+    }, [note.id, onBringToFront]);
 
-  const handleTextChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    updateNote({ ...note, text: event.target.value })
-  }, [note, updateNote])
+    const handlePointerDown = useCallback(() => {
+        onBringToFront?.(note.id);
+    }, [note.id, onBringToFront]);
 
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
-    const moveAmount = event.shiftKey ? 50 : 10
+    const handleDeleteClick = useCallback(() => {
+        onDelete?.(note.id);
+    }, [note.id, onDelete]);
 
-    switch (event.key) {
-      case 'ArrowUp':
-        event.preventDefault()
-        updateNote({
-          ...note,
-          position: { x: note.position.x, y: note.position.y - moveAmount }
-        })
-        break
-      case 'ArrowDown':
-        event.preventDefault()
-        updateNote({
-          ...note,
-          position: { x: note.position.x, y: note.position.y + moveAmount }
-        })
-        break
-      case 'ArrowLeft':
-        event.preventDefault()
-        updateNote({
-          ...note,
-          position: { x: note.position.x - moveAmount, y: note.position.y }
-        })
-        break
-      case 'ArrowRight':
-        event.preventDefault()
-        updateNote({
-          ...note,
-          position: { x: note.position.x + moveAmount, y: note.position.y }
-        })
-        break
-      case 'Delete':
-      case 'Backspace':
-        event.preventDefault()
-        onDelete?.(note.id)
-        break
-    }
-  }, [note, updateNote, onDelete])
+    const handleButtonDragStart = useCallback((event: React.DragEvent) => {
+        event.stopPropagation();
+    }, []);
 
-  useEffect(() => {
-    return () => {
-      document.removeEventListener('pointermove', handlePointerMoveRef.current)
-      document.removeEventListener('pointerup', handlePointerUpRef.current)
-    }
-  }, [])
+    const ariaLabel = `${note.title}. Position ${Math.round(note.position.x)}, ${Math.round(
+        note.position.y
+    )}. Size ${Math.round(note.size.width)} by ${Math.round(
+        note.size.height
+    )}. Use arrow keys to move this note.`;
 
-  return (
-    <div
-      id={`note-${note.id}`}
-      tabIndex={0}
-      role="application"
-      aria-label={`Sticky note ${note.id}. Position: ${note.position.x}, ${note.position.y}. Size: ${note.size.width} by ${note.size.height}. Use arrow keys to move, drag to reposition.`}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      onKeyDown={handleKeyDown}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      className={`${noteStyles.note} ${isTouchMoving ? noteStyles.isDraggingEffect : ''}`}
-      style={dynamicStyle}
-      draggable
-    >
-      <textarea
-        id={`note-textarea-${note.id}`}
-        name={`note-text-${note.id}`}
-        className={noteStyles.textarea}
-        value={note.text}
-        onChange={handleTextChange}
-        placeholder="Type anything..."
-        aria-label="Note content"
-      />
-      <div
-        className={noteStyles.resizeHandle}
-        onPointerDown={handleResize}
-        aria-label="Resize note"
-        role="button"
-        tabIndex={-1}
-      />
-    </div>
-  )
-}
+    const classNames = [
+        noteStyles.note,
+        isTouchMoving ? noteStyles.isDraggingEffect : '',
+        isResizing ? noteStyles.isResizing : '',
+    ]
+        .filter(Boolean)
+        .join(' ');
 
-export default memo(Note)
+    return (
+        <div
+            id={`note-${note.id}`}
+            tabIndex={0}
+            role="group"
+            aria-label={ariaLabel}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onKeyDown={handleKeyDown}
+            onFocus={handleFocus}
+            onPointerDown={handlePointerDown}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            className={classNames}
+            style={dynamicStyle}
+            draggable
+        >
+            <textarea
+                id={`note-textarea-${note.id}`}
+                name={`note-text-${note.id}`}
+                className={noteStyles.textarea}
+                value={note.text}
+                onChange={(event) => updateNote(note.id, { text: event.target.value })}
+                placeholder="Type anything..."
+                aria-label={`${note.title} content`}
+            />
+            <button
+                type="button"
+                className={noteStyles.deleteButton}
+                aria-label={`Delete ${note.title}`}
+                onClick={handleDeleteClick}
+                onDragStart={handleButtonDragStart}
+                draggable={false}
+            >
+                <span aria-hidden="true">×</span>
+            </button>
+            <div
+                className={noteStyles.resizeHandle}
+                onPointerDown={handleResizeStart}
+                onKeyDown={handleResizeKeyDown}
+                aria-label={`Resize ${note.title}. Use arrow keys to change its size.`}
+                role="button"
+                tabIndex={0}
+            />
+        </div>
+    );
+};
+
+// The React Compiler already memoizes this component, the explicit memo keeps
+// the guarantee even if the compiler decides not to optimise it.
+export default memo(Note);
