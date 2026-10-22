@@ -125,20 +125,8 @@
     opacity: 1;
 }
 
-.resizeHandle {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 28px;
-    height: 28px;
-    background: transparent;
-    z-index: 3;
-    cursor: nw-resize;
-    touch-action: none;
-}
-
-.resizeHandle::before {
-    content: '';
+/* The grip that shows the note can be resized. */
+.grip {
     position: absolute;
     right: 6px;
     bottom: 6px;
@@ -148,11 +136,25 @@
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M11 4.5 4.5 11 M11 8 8 11' stroke='%23000' stroke-width='1.6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E") no-repeat center / contain;
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M11 4.5 4.5 11 M11 8 8 11' stroke='%23000' stroke-width='1.6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E") no-repeat center / contain;
     opacity: 0.75;
+    pointer-events: none;
+    z-index: 3;
 }
 
-.resizeHandle:hover::before,
-.resizeHandle:focus-visible::before {
-    --grip: var(--ink);
+.resizeHandle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    z-index: 4;
+    cursor: nw-resize;
+    touch-action: none;
+}
+
+.resizeHandle:hover .grip,
+.resizeHandle:focus-visible .grip {
+    background-color: var(--ink);
     opacity: 1;
 }
 

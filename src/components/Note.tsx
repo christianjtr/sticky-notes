@@ -183,6 +183,11 @@ const Note: React.FC<NoteProps> = ({
         note.size.height
     )}. Use arrow keys to move this note.`;
 
+    // The grip is always drawn, so the affordance is discoverable, but it only
+    // becomes a control on the note under the pointer. A note that is covered
+    // by another one would otherwise offer a handle that cannot be grabbed.
+    const isActive = isHovered || isFocused;
+
     const classNames = [
         noteStyles.note,
         isDragging || isTouchMoving ? noteStyles.isDraggingEffect : '',
@@ -240,14 +245,20 @@ const Note: React.FC<NoteProps> = ({
             >
                 <span aria-hidden="true">×</span>
             </button>
-            <div
-                className={noteStyles.resizeHandle}
-                onPointerDown={handleResizeStart}
-                onKeyDown={handleResizeKeyDown}
-                aria-label={`Resize ${note.title}. Use arrow keys to change its size.`}
-                role="button"
-                tabIndex={0}
-            />
+            {isActive ? (
+                <div
+                    className={noteStyles.resizeHandle}
+                    onPointerDown={handleResizeStart}
+                    onKeyDown={handleResizeKeyDown}
+                    aria-label={`Resize ${note.title}. Use arrow keys to change its size.`}
+                    role="button"
+                    tabIndex={0}
+                >
+                    <span className={noteStyles.grip} aria-hidden="true" />
+                </div>
+            ) : (
+                <span className={noteStyles.grip} aria-hidden="true" />
+            )}
         </div>
     );
 };

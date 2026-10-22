@@ -153,7 +153,11 @@ describe('Note', () => {
         const user = userEvent.setup();
         const { onUpdate } = renderNote();
 
-        screen.getByRole('button', { name: /Resize Note 1/ }).focus();
+        // The handle is a control only on the active note, and the note is
+        // reached first with the keyboard.
+        screen.getByRole('group').focus();
+        const handle = await screen.findByRole('button', { name: /Resize Note 1/ });
+        handle.focus();
         await user.keyboard('{ArrowRight}');
 
         expect(onUpdate).toHaveBeenCalledWith(note.id, {
@@ -165,10 +169,23 @@ describe('Note', () => {
         const user = userEvent.setup();
         const { onUpdate } = renderNote();
 
-        screen.getByRole('button', { name: /Resize Note 1/ }).focus();
+        screen.getByRole('group').focus();
+        const handle = await screen.findByRole('button', { name: /Resize Note 1/ });
+        handle.focus();
         await user.keyboard('{ArrowRight}');
 
         expect(positionUpdates(onUpdate)).toHaveLength(0);
+    });
+
+    it('only offers the resize handle on the active note', async () => {
+        const user = userEvent.setup();
+        renderNote();
+
+        expect(screen.queryByRole('button', { name: /Resize Note 1/ })).not.toBeInTheDocument();
+
+        await user.hover(screen.getByRole('group'));
+
+        expect(screen.getByRole('button', { name: /Resize Note 1/ })).toBeInTheDocument();
     });
 
     it('announces a readable label instead of the raw id', () => {
