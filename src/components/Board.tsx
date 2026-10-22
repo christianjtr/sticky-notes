@@ -28,7 +28,6 @@ const Board: React.FC<BoardProps> = ({ enableTrash = true }): React.ReactElement
   const {
     contexts,
     activeContextId,
-    setActiveContextId,
     toggleContext,
     createContext,
     deleteContext,
@@ -108,10 +107,11 @@ const Board: React.FC<BoardProps> = ({ enableTrash = true }): React.ReactElement
       const id = createContext(name);
       if (!id) return;
 
-      setActiveContextId(id);
-      announce(`Context ${name} created. Showing the notes of ${name}.`);
+      // The board keeps showing every note: the new context starts empty and
+      // the notes are filed in it by dragging them onto its tag.
+      announce(`Context ${name} created.`);
     },
-    [createContext, setActiveContextId, announce]
+    [createContext, announce]
   );
 
   const handleAssignContext = useCallback(
@@ -141,6 +141,10 @@ const Board: React.FC<BoardProps> = ({ enableTrash = true }): React.ReactElement
     },
     [notes, contexts, updateNote, deleteContext, announce]
   );
+
+  const activeContext = contexts.find(
+    (context) => context.id === activeContextId
+  ) ?? null;
 
   return (
     <div
@@ -173,6 +177,12 @@ const Board: React.FC<BoardProps> = ({ enableTrash = true }): React.ReactElement
           onDelete={handleDeleteContext}
         />
       </div>
+
+      {activeContext && visibleNotes.length === 0 && (
+        <p className={boardStyles.emptyState}>
+          No notes in {activeContext.name} yet. Drag a note onto its tag to file it there.
+        </p>
+      )}
 
       {visibleNotes.map(note => (
         <Note

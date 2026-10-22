@@ -22,3 +22,17 @@
   user-select: none;
   -webkit-user-select: none;
 }
+
+.emptyState {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  max-width: 320px;
+  text-align: center;
+  color: var(--chrome-muted);
+  font-size: 13px;
+  line-height: 1.6;
+  pointer-events: none;
+}

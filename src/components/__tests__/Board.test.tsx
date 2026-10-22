@@ -82,4 +82,33 @@ describe('Board', () => {
 
         expect(screen.queryAllByRole('group', { name: /arrow keys/ })).toHaveLength(0);
     });
+
+    it('keeps the notes on the board when a context is created', async () => {
+        const user = userEvent.setup();
+        render(<Board />);
+
+        await user.click(screen.getByRole('button', { name: 'Add Note' }));
+        await user.click(screen.getByRole('button', { name: '+ Nuevo' }));
+        await user.type(screen.getByLabelText('Nombre del nuevo contexto'), 'Trabajo');
+        await user.keyboard('{Enter}');
+
+        expect(screen.getAllByRole('group', { name: /arrow keys/ })).toHaveLength(1);
+        expect(screen.getByRole('button', { name: 'Trabajo' })).toHaveAttribute(
+            'aria-pressed',
+            'false'
+        );
+    });
+
+    it('explains an empty context', async () => {
+        const user = userEvent.setup();
+        render(<Board />);
+
+        await user.click(screen.getByRole('button', { name: '+ Nuevo' }));
+        await user.type(screen.getByLabelText('Nombre del nuevo contexto'), 'Trabajo');
+        await user.keyboard('{Enter}');
+
+        await user.click(screen.getByRole('button', { name: 'Trabajo' }));
+
+        expect(screen.getByText(/No notes in Trabajo yet/)).toBeInTheDocument();
+    });
 });
