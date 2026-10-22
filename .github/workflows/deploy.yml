@@ -1,0 +1,56 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Publish the demo branch
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+        env:
+          BASE_PATH: /sticky-notes/
+
+      - name: Checkout the demo branch
+        uses: actions/checkout@v4
+        with:
+          ref: demo
+          path: demo-branch
+
+      - name: Replace the demo branch content with the build
+        run: |
+          rm -rf demo-branch/*
+          cp -R dist/. demo-branch/
+
+      - name: Commit and push
+        working-directory: demo-branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: deploy the demo branch from main"
+          git push origin demo
