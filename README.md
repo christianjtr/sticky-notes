@@ -49,6 +49,7 @@ Open the browser on the printed localhost URL.
 
 <p align="center">
     <img src="https://github.com/christianjtr/sticky-notes/blob/main/samples/sticky-notes-board.gif" alt="gif-demo"/>
+    
 </p>
 
 ## 👨‍🏫 Architecture
